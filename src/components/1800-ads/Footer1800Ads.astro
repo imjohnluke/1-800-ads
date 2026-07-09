@@ -1,0 +1,143 @@
+---
+import Container from '../ui/Container.astro'
+
+const sectionLinks = [
+  { label: 'How it works', href: '#offer' },
+  { label: 'Flexibility', href: '#flexibility' },
+  { label: 'Examples', href: '#work' },
+  { label: 'Pricing', href: '#order' },
+  { label: 'Why 1-800 Ads', href: '#why' },
+  { label: 'FAQ', href: '#faq' },
+]
+---
+
+<footer class="ea-footer">
+  <Container class="ea-footer-inner">
+    <div class="ea-footer-grid">
+      <div class="ea-footer-brand">
+        <img
+          src="/images/1-800-ads/logo.png"
+          alt="1-800 Ads"
+          class="ea-footer-logo"
+          width="140"
+          height="36"
+          loading="lazy"
+        />
+        <p class="ea-footer-tagline">Static ad creatives on demand — no subscription required.</p>
+      </div>
+
+      <div class="ea-footer-col">
+        <h4 class="ea-footer-col-title">On this page</h4>
+        <nav class="ea-footer-links" aria-label="Page sections">
+          {sectionLinks.map((link) => <a href={link.href}>{link.label}</a>)}
+        </nav>
+      </div>
+    </div>
+
+    <p class="ea-footer-copyright">&copy;2026 1-800 Ads | Los Angeles, CA | All Rights Reserved.</p>
+  </Container>
+</footer>
+
+<style>
+  .ea-footer {
+    background: #ffffff;
+    padding: clamp(48px, 6vw, 72px) 0 clamp(32px, 4vw, 48px);
+    color: #11110f;
+    font-family: 'Inter', 'DM Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .ea-footer :global(.ea-footer-inner) {
+    max-width: 1232px;
+    padding-inline: clamp(20px, 3vw, 28px);
+  }
+
+  .ea-footer-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: clamp(32px, 5vw, 56px);
+    margin-bottom: 2rem;
+  }
+
+  .ea-footer-brand {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    align-items: flex-start;
+  }
+
+  .ea-footer-logo {
+    display: block;
+    max-width: none;
+    object-fit: contain;
+  }
+
+  .ea-footer-tagline {
+    margin: 0;
+    max-width: 260px;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: #6b6677;
+  }
+
+  .ea-footer-col {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .ea-footer-col-title {
+    margin: 0;
+    font-family: 'Inter Tight', 'Plus Jakarta Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #11110f;
+  }
+
+  .ea-footer-links {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .ea-footer-links a {
+    color: #6b6677;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .ea-footer-links a:hover {
+    color: #11110f;
+  }
+
+  .ea-footer-copyright {
+    margin: 2rem 0 0;
+    text-align: center;
+    font-size: 0.8125rem;
+    color: #8a8398;
+  }
+
+  @media (max-width: 768px) {
+    .ea-footer-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .ea-footer-brand {
+      grid-column: span 2;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .ea-footer-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .ea-footer-brand {
+      grid-column: span 1;
+    }
+  }
+</style>

@@ -1,0 +1,57 @@
+---
+import '../styles/global.css'
+import CookieConsent from '../components/CookieConsent.astro'
+import { SITE_NAME } from '../lib/site'
+
+interface Props {
+  title: string
+  description?: string
+  image?: string
+  canonicalURL?: string
+  noIndex?: boolean
+}
+
+const {
+  title,
+  description = 'Order professional static ad creatives à la carte. No subscription — concept, design, and delivery in under 24 hours.',
+  image = '/images/1-800-ads/logo.png',
+  canonicalURL = Astro.url.href,
+  noIndex = false,
+} = Astro.props
+
+const fullTitle = title === SITE_NAME ? `${SITE_NAME} — Static Ad Creatives On Demand` : `${title} | ${SITE_NAME}`
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="/images/1-800-ads/logo.png" />
+    <link rel="canonical" href={canonicalURL} />
+
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    {noIndex && <meta name="robots" content="noindex, nofollow" />}
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(image, Astro.site)} />
+    <meta property="og:site_name" content={SITE_NAME} />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={new URL(image, Astro.site)} />
+
+    <meta name="theme-color" content="#11110f" />
+
+    <slot name="head" />
+  </head>
+  <body>
+    <slot />
+    <CookieConsent />
+  </body>
+</html>

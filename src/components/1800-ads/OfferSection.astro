@@ -1,0 +1,728 @@
+---
+import { PROCESS_STEPS } from '../../data/1800-ads-offer'
+---
+
+<section class="ea-offer-section" id="offer" aria-labelledby="ea-offer-heading">
+  <div class="ea-offer-wrap">
+    <div class="ea-process-track" data-ea-process-track>
+      <div class="ea-process-pin" data-ea-process-pin>
+        <div class="ea-offer-header" data-ea-offer-header>
+          <h2 id="ea-offer-heading" class="ea-offer-title">
+            New static ads <span class="ea-offer-title-grad">concepted</span>, <span class="ea-offer-title-grad">designed</span> and <span class="ea-offer-title-grad">delivered</span> in days
+          </h2>
+        <p class="ea-offer-intro">
+          We use performance-driven systems to produce fresh angles to test and bring new energy into your ad account.
+        </p>
+        </div>
+
+        <div class="ea-process-stage" data-ea-process-stage>
+          {
+            PROCESS_STEPS.map((step, index) => (
+              <article class="ea-process-card" style={`--i: ${index}`} data-ea-process-card>
+                <div class="ea-process-copy">
+                  <h3 class="ea-process-title">{step.title}</h3>
+                  <p class="ea-process-lead">{step.lead}</p>
+                  <ul class="ea-process-points">
+                    {step.points.map((point) => (
+                      <li>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                          <path
+                            d="M20 6 9 17l-5-5"
+                            stroke="currentColor"
+                            stroke-width="2.5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          />
+                        </svg>
+                        {point}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div class={`ea-process-visual ea-process-visual-${step.visual}`} aria-hidden="true">
+                  {
+                    step.visual === 'concept' && (
+                      <div class="ea-visual-brief">
+                        <div class="ea-visual-brief-bar">
+                          <span />
+                          <span />
+                          <span />
+                        </div>
+                        <div class="ea-visual-brief-body">
+                          <div class="ea-visual-field">
+                            <span class="ea-visual-label">Product</span>
+                            <span class="ea-visual-value">Your hero SKU</span>
+                          </div>
+                          <div class="ea-visual-field">
+                            <span class="ea-visual-label">Audience</span>
+                            <span class="ea-visual-value">High-intent buyers</span>
+                          </div>
+                          <div class="ea-visual-field">
+                            <span class="ea-visual-label">Offer</span>
+                            <span class="ea-visual-value">20% off first order</span>
+                          </div>
+                          <div class="ea-visual-field">
+                            <span class="ea-visual-label">Tone</span>
+                            <span class="ea-visual-value">Direct response, UGC-friendly</span>
+                          </div>
+                          <div class="ea-visual-chips">
+                            <span>Hook angle</span>
+                            <span>Offer test</span>
+                            <span>UGC style</span>
+                            <span>Story format</span>
+                            <span>Problem / solution</span>
+                            <span>Social proof</span>
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  }
+                  {
+                    step.visual === 'design' && step.images && (
+                      <div class="ea-visual-ads">
+                        {step.images.map((src) => (
+                          <img src={src} alt="" loading="lazy" width="200" height="250" />
+                        ))}
+                      </div>
+                    )
+                  }
+                  {
+                    step.visual === 'deliver' && (
+                      <div class="ea-visual-delivery">
+                        <div class="ea-visual-delivery-badge">Ready for Meta</div>
+                        <ul class="ea-visual-files">
+                          <li>
+                            <span class="ea-visual-file-icon" />
+                            <span>feed-1080x1080.png</span>
+                          </li>
+                          <li>
+                            <span class="ea-visual-file-icon" />
+                            <span>story-1080x1920.png</span>
+                          </li>
+                          <li>
+                            <span class="ea-visual-file-icon" />
+                            <span>revisions-round-1.zip</span>
+                          </li>
+                        </ul>
+                        <div class="ea-visual-delivery-time">Delivered in &lt; 24 hrs</div>
+                      </div>
+                    )
+                  }
+                </div>
+              </article>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  function clamp(value: number, min = 0, max = 1) {
+    return Math.min(max, Math.max(min, value))
+  }
+
+  function lerp(a: number, b: number, t: number) {
+    return a + (b - a) * t
+  }
+
+  function segment(progress: number, start: number, end: number) {
+    return clamp((progress - start) / (end - start))
+  }
+
+  const STACK_GAP = 8
+  const SCALE_STEP = 0.022
+  const BRIGHT_STEP = 0.04
+  const ENTER_Y = 72
+
+  const PHASES = [
+    { start: 0, end: 0.07, active: 0, mode: 'enter' as const },
+    { start: 0.07, end: 0.26, active: 0, mode: 'hold' as const },
+    { start: 0.26, end: 0.38, active: 1, mode: 'enter' as const },
+    { start: 0.38, end: 0.54, active: 1, mode: 'hold' as const },
+    { start: 0.54, end: 0.66, active: 2, mode: 'enter' as const },
+    { start: 0.66, end: 0.78, active: 2, mode: 'hold' as const },
+  ]
+
+  function getPhase(progress: number) {
+    for (const phase of PHASES) {
+      if (progress >= phase.start && progress < phase.end) {
+        return { ...phase, t: segment(progress, phase.start, phase.end) }
+      }
+    }
+    return { start: 0.78, end: 1, active: 2, mode: 'hold' as const, t: 1 }
+  }
+
+  function getCardState(cardIndex: number, progress: number) {
+    const { active, mode, t } = getPhase(progress)
+
+    if (cardIndex > active) {
+      return { opacity: 0, y: ENTER_Y, scale: 0.98, brightness: 1, z: cardIndex + 1 }
+    }
+
+    const layersBehind = active - cardIndex
+    const targetY = -layersBehind * STACK_GAP
+    const targetScale = 1 - layersBehind * SCALE_STEP
+    const targetBright = 1 - layersBehind * BRIGHT_STEP
+
+    if (cardIndex === active && mode === 'enter') {
+      return {
+        opacity: t,
+        y: lerp(ENTER_Y, 0, t),
+        scale: lerp(0.98, 1, t),
+        brightness: 1,
+        z: active + 10,
+      }
+    }
+
+    if (cardIndex < active && mode === 'enter') {
+      const prevLayersBehind = active - 1 - cardIndex
+      const prevY = -prevLayersBehind * STACK_GAP
+      return {
+        opacity: 1,
+        y: lerp(prevY, targetY, t),
+        scale: lerp(1 - prevLayersBehind * SCALE_STEP, targetScale, t),
+        brightness: lerp(1 - prevLayersBehind * BRIGHT_STEP, targetBright, t),
+        z: cardIndex + 1,
+      }
+    }
+
+    return {
+      opacity: 1,
+      y: targetY,
+      scale: targetScale,
+      brightness: targetBright,
+      z: cardIndex + 1,
+    }
+  }
+
+  function initProcessStack() {
+    const track = document.querySelector('[data-ea-process-track]')
+    if (!track || track.hasAttribute('data-ea-process-init')) return
+    track.setAttribute('data-ea-process-init', '')
+
+    const section = track.closest('.ea-offer-section') as HTMLElement | null
+    const siteHeader = document.getElementById('header-wrapper')
+    const cards = Array.from(track.querySelectorAll('[data-ea-process-card]')) as HTMLElement[]
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+    const syncOffsets = () => {
+      if (!section) return
+      section.style.setProperty('--ea-nav-h', `${siteHeader?.offsetHeight ?? 72}px`)
+    }
+
+    const update = () => {
+      syncOffsets()
+
+      if (reducedMotion) {
+        cards.forEach((card, index) => {
+          const layersBehind = cards.length - 1 - index
+          card.style.opacity = '1'
+          card.style.transform = `translateY(${-layersBehind * STACK_GAP}px) scale(${1 - layersBehind * SCALE_STEP})`
+          card.style.filter = 'none'
+          card.style.zIndex = String(index + 1)
+        })
+        return
+      }
+
+      const rect = track.getBoundingClientRect()
+      const scrollable = track.offsetHeight - window.innerHeight
+      if (scrollable <= 0) return
+
+      const progress = clamp(-rect.top / scrollable)
+
+      cards.forEach((card, index) => {
+        const state = getCardState(index, progress)
+        card.style.opacity = String(state.opacity)
+        card.style.transform = `translateY(${state.y}px) scale(${state.scale})`
+        card.style.filter = `brightness(${state.brightness})`
+        card.style.zIndex = String(state.z)
+      })
+    }
+
+    update()
+    window.addEventListener('scroll', update, { passive: true })
+    window.addEventListener('resize', update)
+  }
+
+  initProcessStack()
+  document.addEventListener('astro:page-load', initProcessStack)
+</script>
+
+<style>
+  .ea-offer-section {
+    --ea-ink: #11110f;
+    --ea-muted: #6b6677;
+    --ea-accent: #ff6b2e;
+    --ea-grad: linear-gradient(90deg, #ff8a3d 0%, #ff6b2e 22%, #e84b6f 55%, #9c42e0 80%, #7b3fe4 100%);
+    --ea-card-bg: #f0f0f3;
+    --ea-card-border: #e0e0e6;
+    --ea-nav-h: 72px;
+    --ea-shell-pad-top: 70px;
+    --ea-font-display: 'Inter Tight', 'Plus Jakarta Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --ea-font-sans: 'Inter', 'DM Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --ea-font-mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+    --ea-pad: clamp(20px, 3vw, 28px);
+    --ea-maxw: 1232px;
+
+    padding: clamp(36px, 5vw, 56px) 0 clamp(56px, 7vw, 88px);
+    background: #fff;
+    position: relative;
+    z-index: 2;
+    font-family: var(--ea-font-sans);
+    color: var(--ea-ink);
+  }
+
+  .ea-offer-wrap {
+    max-width: var(--ea-maxw);
+    margin: 0 auto;
+    padding: 0 var(--ea-pad);
+  }
+
+  .ea-process-track {
+    position: relative;
+    height: 250vh;
+  }
+
+  .ea-process-pin {
+    position: sticky;
+    top: var(--ea-nav-h);
+    display: flex;
+    flex-direction: column;
+    padding-top: var(--ea-shell-pad-top);
+    padding-bottom: 0;
+    background: #fff;
+    z-index: 5;
+    overflow: visible;
+  }
+
+  .ea-offer-header {
+    flex-shrink: 0;
+    max-width: 54rem;
+    margin: 0 auto;
+    padding: 0 0 clamp(32px, 4.5vw, 48px);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #fff;
+  }
+
+  .ea-offer-title {
+    margin: 0;
+    font-family: var(--ea-font-display);
+    font-weight: 800;
+    font-size: clamp(36px, 5.2vw, 60px);
+    line-height: 0.98;
+    letter-spacing: -0.05em;
+    text-wrap: balance;
+  }
+
+  .ea-offer-title-grad {
+    background: var(--ea-grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+
+  .ea-offer-intro {
+    margin: 16px auto 0;
+    font-size: clamp(16px, 1.45vw, 18px);
+    line-height: 1.48;
+    letter-spacing: -0.02em;
+    color: var(--ea-muted);
+    max-width: 34rem;
+  }
+
+  .ea-process-stage {
+    position: relative;
+    width: 100%;
+    max-width: 960px;
+    margin: 0 auto;
+    min-height: clamp(340px, 48vh, 460px);
+    padding-top: clamp(20px, 3vw, 32px);
+    overflow: visible;
+  }
+
+  .ea-process-card {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    opacity: 0;
+    pointer-events: none;
+    min-height: clamp(340px, 52vh, 480px);
+    display: grid;
+    grid-template-columns: 1fr 1.12fr;
+    background: var(--ea-card-bg);
+    border: 1px solid var(--ea-card-border);
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 8px 28px rgba(17, 17, 15, 0.06);
+    transform-origin: top center;
+    will-change: transform, filter;
+  }
+
+  .ea-process-copy {
+    padding: clamp(28px, 4vw, 40px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    text-align: left;
+    gap: 14px;
+    height: 100%;
+  }
+
+  .ea-process-title {
+    margin: 0;
+    font-family: var(--ea-font-display);
+    font-weight: 800;
+    font-size: clamp(32px, 4vw, 44px);
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: var(--ea-ink);
+  }
+
+  .ea-process-lead {
+    margin: 0;
+    font-size: clamp(15px, 1.4vw, 17px);
+    line-height: 1.55;
+    letter-spacing: -0.02em;
+    color: var(--ea-ink);
+    max-width: 32rem;
+  }
+
+  .ea-process-points {
+    margin: 2px 0 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0 0.75rem;
+    max-width: 32rem;
+    width: 100%;
+  }
+
+  .ea-process-points li {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--ea-muted);
+    white-space: nowrap;
+  }
+
+  .ea-process-points svg {
+    flex-shrink: 0;
+    color: #7b3fe4;
+  }
+
+  .ea-process-visual {
+    position: relative;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(16px, 2vw, 24px);
+    overflow: hidden;
+  }
+
+  .ea-visual-brief {
+    width: min(100%, 420px);
+    background: #fff;
+    border: 1px solid #e8e2f2;
+    border-radius: 16px;
+    box-shadow: 0 12px 32px rgba(17, 17, 15, 0.06);
+    overflow: hidden;
+  }
+
+  .ea-process-visual-concept {
+    align-items: stretch;
+  }
+
+  .ea-process-visual-concept .ea-visual-brief {
+    width: min(100%, 360px);
+    min-height: min(100%, 480px);
+    max-height: 500px;
+    margin: auto 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ea-process-visual-concept .ea-visual-brief-body {
+    flex: 1;
+    justify-content: space-between;
+    padding: 20px 18px 24px;
+    gap: 18px;
+  }
+
+  .ea-visual-brief-bar {
+    display: flex;
+    gap: 6px;
+    padding: 12px 14px;
+    border-bottom: 1px solid #f0ebf8;
+    background: #fcfbff;
+  }
+
+  .ea-visual-brief-bar span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #e2dbf0;
+  }
+
+  .ea-visual-brief-bar span:first-child {
+    background: #ff8a3d;
+  }
+
+  .ea-visual-brief-bar span:nth-child(2) {
+    background: #e84b6f;
+  }
+
+  .ea-visual-brief-bar span:nth-child(3) {
+    background: #7b3fe4;
+  }
+
+  .ea-visual-brief-body {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .ea-visual-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .ea-visual-label {
+    font-family: var(--ea-font-mono);
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ea-muted);
+  }
+
+  .ea-visual-value {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ea-ink);
+  }
+
+  .ea-visual-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 4px;
+  }
+
+  .ea-visual-chips span {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 5px 10px;
+    border-radius: 999px;
+    background: rgba(123, 63, 228, 0.08);
+    border: 1px solid rgba(123, 63, 228, 0.12);
+    color: #7b3fe4;
+  }
+
+  .ea-visual-ads {
+    position: relative;
+    width: min(100%, 420px);
+    height: min(100%, 400px);
+    min-height: 340px;
+  }
+
+  .ea-visual-ads img {
+    position: absolute;
+    width: 52%;
+    border-radius: 12px;
+    border: 2px solid #fff;
+    box-shadow: 0 16px 40px rgba(17, 17, 15, 0.12);
+    object-fit: cover;
+    aspect-ratio: 4 / 5;
+  }
+
+  .ea-visual-ads img:nth-child(1) {
+    top: 8%;
+    left: 4%;
+    transform: rotate(-6deg);
+    z-index: 1;
+  }
+
+  .ea-visual-ads img:nth-child(2) {
+    top: 18%;
+    right: 2%;
+    transform: rotate(4deg);
+    z-index: 2;
+  }
+
+  .ea-visual-ads img:nth-child(3) {
+    bottom: 4%;
+    left: 24%;
+    transform: rotate(-2deg);
+    z-index: 3;
+  }
+
+  .ea-visual-delivery {
+    width: min(100%, 400px);
+    background: #fff;
+    border: 1px solid #e8e2f2;
+    border-radius: 16px;
+    padding: 18px;
+    box-shadow: 0 12px 32px rgba(17, 17, 15, 0.06);
+  }
+
+  .ea-visual-delivery-badge {
+    display: inline-flex;
+    font-family: var(--ea-font-mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 500;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: rgba(255, 107, 46, 0.1);
+    color: var(--ea-accent);
+    margin-bottom: 14px;
+  }
+
+  .ea-visual-files {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .ea-visual-files li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--ea-ink);
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: #faf8ff;
+    border: 1px solid #efe8f8;
+  }
+
+  .ea-visual-file-icon {
+    width: 14px;
+    height: 16px;
+    border-radius: 2px;
+    background: linear-gradient(180deg, #ff8a3d, #7b3fe4);
+    flex-shrink: 0;
+  }
+
+  .ea-visual-delivery-time {
+    margin-top: 14px;
+    font-family: var(--ea-font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #7b3fe4;
+    text-align: center;
+  }
+
+  @media (max-width: 820px) {
+    .ea-process-track {
+      height: auto;
+    }
+
+    .ea-process-pin {
+      position: relative;
+      top: auto;
+      min-height: 0;
+      padding-top: clamp(20px, 3vw, 32px);
+      overflow: visible;
+    }
+
+    .ea-process-stage {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      min-height: 0;
+      overflow: visible;
+      padding-bottom: 24px;
+    }
+
+    .ea-process-card {
+      position: sticky;
+      top: calc(var(--ea-nav-h) + 12px + (var(--i) * 14px));
+      left: auto;
+      right: auto;
+      z-index: calc(var(--i) + 1);
+      opacity: 1 !important;
+      pointer-events: auto;
+      transform: none !important;
+      filter: none !important;
+      min-height: 0;
+      grid-template-columns: 1fr;
+    }
+
+    .ea-process-visual {
+      min-height: 320px;
+    }
+
+    .ea-process-title {
+      font-size: clamp(18px, 1.65vw, 20px);
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+
+    .ea-process-lead {
+      margin-top: -2px;
+    }
+
+    .ea-visual-chips span:nth-child(n + 3) {
+      display: none;
+    }
+
+    .ea-process-visual-concept .ea-visual-brief {
+      min-height: 0;
+      max-height: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ea-process-track {
+      height: auto;
+    }
+
+    .ea-process-pin {
+      position: relative;
+      top: auto;
+      min-height: 0;
+      padding-top: clamp(20px, 3vw, 32px);
+    }
+
+    .ea-process-stage {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      min-height: 0;
+    }
+
+    .ea-process-card {
+      position: relative;
+      top: auto;
+      left: auto;
+      right: auto;
+      opacity: 1 !important;
+      pointer-events: auto;
+      min-height: 0;
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,171 @@
+---
+import { TESTIMONIALS_1800 } from '../../data/1800-ads-testimonials'
+---
+
+<section class="ea-testimonials" id="testimonials" aria-labelledby="ea-testimonials-heading">
+  <div class="ea-testimonials-wrap">
+    <div class="ea-testimonials-header">
+      <span class="ea-testimonials-eyebrow">Customer stories</span>
+      <h2 id="ea-testimonials-heading" class="ea-testimonials-title">
+        Why brands order ads<br />
+        <span class="ea-testimonials-title-grad">again and again.</span>
+      </h2>
+    </div>
+
+    <ul class="ea-testimonials-grid">
+      {
+        TESTIMONIALS_1800.map((item) => (
+          <li class="ea-testimonial-card">
+            <blockquote class="ea-testimonial-quote">&ldquo;{item.quote}&rdquo;</blockquote>
+            <div class="ea-testimonial-author">
+              <img
+                src={item.avatar}
+                alt={item.name}
+                class="ea-testimonial-avatar"
+                width="48"
+                height="48"
+                loading="lazy"
+              />
+              <div>
+                <p class="ea-testimonial-name">{item.name}</p>
+                <p class="ea-testimonial-role">{item.role}</p>
+              </div>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .ea-testimonials {
+    --ea-ink: #11110f;
+    --ea-muted: #6b6677;
+    --ea-accent: #ff6b2e;
+    --ea-line: #e2dbf0;
+    --ea-surface: #f5f0ff;
+    --ea-grad: linear-gradient(90deg, #ff8a3d 0%, #ff6b2e 22%, #e84b6f 55%, #9c42e0 80%, #7b3fe4 100%);
+    --ea-font-display: 'Inter Tight', 'Plus Jakarta Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --ea-font-sans: 'Inter', 'DM Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --ea-pad: clamp(20px, 3vw, 28px);
+    --ea-maxw: 1232px;
+
+    padding: 0 0 clamp(56px, 7vw, 88px);
+    background: #fff;
+    font-family: var(--ea-font-sans);
+    color: var(--ea-ink);
+  }
+
+  @media (min-width: 901px) {
+    .ea-testimonials {
+      padding-top: clamp(64px, 8vw, 112px);
+    }
+  }
+
+  .ea-testimonials-wrap {
+    max-width: var(--ea-maxw);
+    margin: 0 auto;
+    padding: 0 var(--ea-pad);
+  }
+
+  .ea-testimonials-header {
+    max-width: 36rem;
+    margin: 0 auto clamp(32px, 4.5vw, 48px);
+    text-align: center;
+  }
+
+  .ea-testimonials-eyebrow {
+    display: inline-block;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ea-accent);
+  }
+
+  .ea-testimonials-title {
+    margin: 12px 0 0;
+    font-family: var(--ea-font-display);
+    font-weight: 800;
+    font-size: clamp(30px, 4.2vw, 48px);
+    line-height: 1.02;
+    letter-spacing: -0.04em;
+    text-wrap: balance;
+  }
+
+  .ea-testimonials-title-grad {
+    background: var(--ea-grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+
+  .ea-testimonials-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(16px, 2vw, 20px);
+  }
+
+  @media (max-width: 720px) {
+    .ea-testimonials-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .ea-testimonial-card {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-height: 100%;
+    padding: clamp(24px, 3vw, 28px);
+    border-radius: 18px;
+    border: 1px solid var(--ea-line);
+    background: var(--ea-surface);
+  }
+
+  .ea-testimonial-quote {
+    margin: 0;
+    flex: 1;
+    font-size: clamp(15px, 1.35vw, 16px);
+    line-height: 1.62;
+    letter-spacing: -0.01em;
+    color: var(--ea-ink);
+  }
+
+  .ea-testimonial-author {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .ea-testimonial-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: #fff;
+    border: 1px solid var(--ea-line);
+  }
+
+  .ea-testimonial-name {
+    margin: 0;
+    font-family: var(--ea-font-display);
+    font-size: 0.9375rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--ea-ink);
+  }
+
+  .ea-testimonial-role {
+    margin: 2px 0 0;
+    font-size: 0.8125rem;
+    color: var(--ea-muted);
+  }
+</style>

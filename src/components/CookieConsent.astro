@@ -1,0 +1,176 @@
+---
+---
+
+<div id="cookie-consent" class="cookie-banner" role="dialog" aria-label="Cookie consent">
+  <div class="cookie-inner">
+    <p class="cookie-text">
+      We use cookies to improve your experience and analyze site traffic.
+      <a href="mailto:hello@1-800ads.com" class="cookie-link">Contact us</a>
+    </p>
+    <div class="cookie-actions">
+      <button id="cookie-decline" class="cookie-btn cookie-btn-decline">Decline</button>
+      <button id="cookie-accept" class="cookie-btn cookie-btn-accept">Accept</button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .cookie-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 9990;
+    padding: 1rem 1.5rem;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    transform: translateY(100%);
+    opacity: 0;
+    transition: transform 0.4s ease, opacity 0.4s ease;
+    display: none;
+  }
+
+  .cookie-banner.visible {
+    display: block;
+  }
+
+  .cookie-banner.show {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .cookie-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+  }
+
+  .cookie-text {
+    font-size: 0.875rem;
+    color: #4b5563;
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .cookie-link {
+    color: #6d28d9;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    white-space: nowrap;
+  }
+
+  .cookie-link:hover {
+    color: #5b21b6;
+  }
+
+  .cookie-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+  }
+
+  .cookie-btn {
+    padding: 0.5rem 1.25rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+    white-space: nowrap;
+  }
+
+  .cookie-btn-decline {
+    background: transparent;
+    border: 1px solid #d1d5db;
+    color: #6b7280;
+  }
+
+  .cookie-btn-decline:hover {
+    border-color: #9ca3af;
+    color: #374151;
+  }
+
+  .cookie-btn-accept {
+    background: #6d28d9;
+    border: 1px solid #6d28d9;
+    color: #fff;
+  }
+
+  .cookie-btn-accept:hover {
+    background: #5b21b6;
+    border-color: #5b21b6;
+  }
+
+  @media (max-width: 640px) {
+    .cookie-inner {
+      flex-direction: column;
+      text-align: center;
+      gap: 0.75rem;
+    }
+
+    .cookie-actions {
+      width: 100%;
+    }
+
+    .cookie-btn {
+      flex: 1;
+    }
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    var consent = null;
+    try {
+      var raw = localStorage.getItem('cookie_consent');
+      if (raw) consent = JSON.parse(raw);
+    } catch (e) {}
+
+    if (consent) return;
+
+    var banner = document.getElementById('cookie-consent');
+    if (!banner) return;
+
+    // Show banner with delay
+    setTimeout(function () {
+      banner.classList.add('visible');
+      // Force reflow before adding show class for animation
+      banner.offsetHeight;
+      banner.classList.add('show');
+    }, 300);
+
+    function saveConsent(accepted) {
+      localStorage.setItem('cookie_consent', JSON.stringify({
+        accepted: accepted,
+        timestamp: Date.now()
+      }));
+      banner.classList.remove('show');
+      setTimeout(function () {
+        banner.classList.remove('visible');
+      }, 400);
+    }
+
+    document.getElementById('cookie-accept').addEventListener('click', function () {
+      saveConsent(true);
+    });
+
+    document.getElementById('cookie-decline').addEventListener('click', function () {
+      // Store decline with timestamp — tracking continues for 14 days,
+      // then blocks on day 15 per third-party propagation regulations
+      localStorage.setItem('cookie_consent', JSON.stringify({
+        accepted: false,
+        timestamp: Date.now(),
+        effectiveDate: Date.now() + (14 * 24 * 60 * 60 * 1000)
+      }));
+      banner.classList.remove('show');
+      setTimeout(function () {
+        banner.classList.remove('visible');
+      }, 400);
+    });
+  })();
+</script>

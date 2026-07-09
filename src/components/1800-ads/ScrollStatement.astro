@@ -1,0 +1,194 @@
+---
+---
+
+<section
+  class="ea-scroll-statement"
+  data-ea-scroll-statement
+  aria-label="Great ad ideas are priceless. We never run out of them."
+>
+  <div class="ea-scroll-statement-pin">
+    <div class="ea-scroll-statement-stage">
+      <p class="ea-scroll-line ea-scroll-line-1" data-ea-scroll-line="1">Great ad ideas are priceless...</p>
+      <p class="ea-scroll-line ea-scroll-line-2" data-ea-scroll-line="2">
+        We never run<br class="ea-scroll-br-mobile" /> out of them.
+      </p>
+    </div>
+  </div>
+</section>
+
+<script>
+  function clamp(value: number, min = 0, max = 1) {
+    return Math.min(max, Math.max(min, value))
+  }
+
+  function initScrollStatement() {
+    const section = document.querySelector('[data-ea-scroll-statement]')
+    if (!section || section.hasAttribute('data-ea-scroll-init')) return
+    section.setAttribute('data-ea-scroll-init', '')
+
+    const line1 = section.querySelector('[data-ea-scroll-line="1"]') as HTMLElement | null
+    const line2 = section.querySelector('[data-ea-scroll-line="2"]') as HTMLElement | null
+    if (!line1 || !line2) return
+
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+    const setLine = (el: HTMLElement, opacity: number, offsetY = 0) => {
+      el.style.opacity = String(opacity)
+      el.style.transform = `translate(-50%, calc(-50% + ${offsetY}px))`
+    }
+
+    const update = () => {
+      if (reducedMotion) {
+        setLine(line1, 1, 0)
+        setLine(line2, 1, 0)
+        line2.style.position = 'relative'
+        line2.style.top = 'auto'
+        line2.style.left = 'auto'
+        line2.style.transform = 'none'
+        line2.style.marginTop = '0.75rem'
+        return
+      }
+
+      const rect = section.getBoundingClientRect()
+      const scrollable = section.offsetHeight - window.innerHeight
+      if (scrollable <= 0) return
+
+      const progress = clamp(-rect.top / scrollable)
+
+      let opacity1 = 0
+      let opacity2 = 0
+      let y1 = 16
+      let y2 = 16
+
+      if (progress < 0.08) {
+        const t = progress / 0.08
+        opacity1 = t
+        y1 = 16 * (1 - t)
+      } else if (progress < 0.38) {
+        opacity1 = 1
+        y1 = 0
+      } else if (progress < 0.5) {
+        const t = (progress - 0.38) / 0.12
+        opacity1 = 1 - t
+        opacity2 = t
+        y1 = -10 * t
+        y2 = 16 * (1 - t)
+      } else if (progress < 0.78) {
+        opacity2 = 1
+        y2 = 0
+      } else {
+        const t = (progress - 0.78) / 0.12
+        opacity2 = 1 - t
+        y2 = -10 * t
+      }
+
+      setLine(line1, opacity1, y1)
+      setLine(line2, opacity2, y2)
+    }
+
+    update()
+    window.addEventListener('scroll', update, { passive: true })
+    window.addEventListener('resize', update)
+  }
+
+  initScrollStatement()
+  document.addEventListener('astro:page-load', initScrollStatement)
+</script>
+
+<style>
+  .ea-scroll-statement {
+    --ea-ink: #11110f;
+    --ea-grad: linear-gradient(90deg, #ff8a3d 0%, #ff6b2e 22%, #e84b6f 55%, #9c42e0 80%, #7b3fe4 100%);
+    --ea-font-display: 'Inter Tight', 'Plus Jakarta Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --ea-pad: clamp(20px, 3vw, 28px);
+
+    height: 260vh;
+    margin-bottom: -35vh;
+    position: relative;
+    z-index: 1;
+    background: #fff;
+  }
+
+  .ea-scroll-statement-pin {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .ea-scroll-statement-stage {
+    position: relative;
+    width: min(920px, 100%);
+    min-height: clamp(120px, 20vw, 180px);
+    padding: 0 var(--ea-pad);
+  }
+
+  .ea-scroll-line {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    margin: 0;
+    opacity: 0;
+    transform: translate(-50%, calc(-50% + 16px));
+    font-family: var(--ea-font-display);
+    font-weight: 800;
+    font-size: clamp(2.25rem, 6vw, 4.5rem);
+    line-height: 1.02;
+    letter-spacing: -0.04em;
+    text-align: center;
+    text-wrap: balance;
+    color: var(--ea-ink);
+    will-change: opacity, transform;
+  }
+
+  .ea-scroll-line-2 {
+    background: var(--ea-grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+
+  .ea-scroll-br-mobile {
+    display: none;
+  }
+
+  @media (max-width: 780px) {
+    .ea-scroll-br-mobile {
+      display: block;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ea-scroll-statement {
+      height: auto;
+    }
+
+    .ea-scroll-statement-pin {
+      position: relative;
+      height: auto;
+      min-height: 40vh;
+      padding: 4rem 0;
+    }
+
+    .ea-scroll-statement-stage {
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .ea-scroll-line {
+      position: relative;
+      top: auto;
+      left: auto;
+      transform: none;
+      opacity: 1;
+    }
+  }
+</style>

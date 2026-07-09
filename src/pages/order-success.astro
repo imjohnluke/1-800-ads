@@ -1,0 +1,79 @@
+---
+import PageLayout from '../layouts/PageLayout.astro'
+import Container from '../components/ui/Container.astro'
+---
+
+<PageLayout
+  title="Order Confirmed"
+  description="Your 1-800 Ads order is confirmed. We'll send your brief intake next."
+  noIndex={true}
+>
+  <section class="ea-success">
+    <Container>
+      <div class="ea-success-inner">
+        <p class="ea-success-label">Order confirmed</p>
+        <h1 class="ea-success-title">You're in — we'll get started on your ads.</h1>
+        <p class="ea-success-copy">
+          Check your email for payment confirmation and a link to fill out your creative brief. Once
+          that's in, our team will concept, design, and deliver your statics in under 24 hours.
+        </p>
+        <a class="ea-success-btn" href="/">Back to 1-800 Ads</a>
+      </div>
+    </Container>
+  </section>
+</PageLayout>
+
+<style>
+  .ea-success {
+    padding: 6rem 0 8rem;
+    background: linear-gradient(180deg, #f5f0ff, #fff 70%);
+  }
+
+  .ea-success-inner {
+    max-width: 36rem;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .ea-success-label {
+    margin: 0 0 0.75rem;
+    font-family: 'Inter Tight', 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-size: 0.875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #673bec;
+  }
+
+  .ea-success-title {
+    margin: 0 0 1rem;
+    font-family: 'Inter Tight', 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    color: #11110f;
+  }
+
+  .ea-success-copy {
+    margin: 0 0 2rem;
+    font-size: 1.0625rem;
+    line-height: 1.7;
+    color: #6b6677;
+  }
+
+  .ea-success-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding: 0 24px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #ff8a3d 0%, #ff6b2e 22%, #e84b6f 55%, #9c42e0 80%, #7b3fe4 100%);
+    color: #fff;
+    font-family: 'Inter Tight', 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+  }
+</style>
