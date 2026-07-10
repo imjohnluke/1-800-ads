@@ -6,9 +6,13 @@
 >
   <div class="ea-scroll-statement-pin">
     <div class="ea-scroll-statement-stage">
-      <p class="ea-scroll-line ea-scroll-line-1" data-ea-scroll-line="1">Great ad ideas are priceless...</p>
+      <p class="ea-scroll-line ea-scroll-line-1" data-ea-scroll-line="1">
+        <span class="ea-scroll-line-seg">Great ad ideas</span>
+        <span class="ea-scroll-line-seg">are priceless...</span>
+      </p>
       <p class="ea-scroll-line ea-scroll-line-2" data-ea-scroll-line="2">
-        We never run<br class="ea-scroll-br-mobile" /> out of them.
+        <span class="ea-scroll-line-seg">We never run</span>
+        <span class="ea-scroll-line-seg">out of them.</span>
       </p>
     </div>
   </div>
@@ -146,13 +150,26 @@
     -webkit-text-fill-color: var(--brand-red);
   }
 
-  .ea-scroll-br-mobile {
-    display: none;
+  .ea-scroll-line-seg {
+    display: inline;
+  }
+
+  .ea-scroll-line-seg + .ea-scroll-line-seg::before {
+    content: ' ';
   }
 
   @media (max-width: 780px) {
-    .ea-scroll-br-mobile {
+    .ea-scroll-line-seg {
       display: block;
+    }
+
+    .ea-scroll-line-seg + .ea-scroll-line-seg::before {
+      content: none;
+    }
+
+    .ea-scroll-line-1,
+    .ea-scroll-line-2 {
+      line-height: 1.1;
     }
   }
 

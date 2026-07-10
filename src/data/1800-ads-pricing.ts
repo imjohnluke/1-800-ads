@@ -4,7 +4,7 @@ export type AdCountOption = (typeof ADS_OPTIONS)[number]
 
 export const ADS_MIN = ADS_OPTIONS[0]
 export const ADS_MAX = ADS_OPTIONS[ADS_OPTIONS.length - 1]
-export const ADS_DEFAULT: AdCountOption = 10
+export const ADS_DEFAULT: AdCountOption = 5
 
 export type DeliverySchedule = 'one-time' | 'monthly'
 
