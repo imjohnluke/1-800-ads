@@ -3,6 +3,7 @@ export const prerender = false
 import type { APIRoute } from 'astro'
 import { stripe } from '../../lib/stripe'
 import { getOrderSummary, clampAdCount, type DeliverySchedule } from '../../data/1800-ads-pricing'
+import { STRIPE_PRICE_IDS } from '../../data/stripe-price-ids'
 import { rateLimit, getClientIp } from '../../lib/rate-limit'
 import { getOrigin } from '../../lib/origin'
 
@@ -35,37 +36,34 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     const order = getOrderSummary(count)
-    const unitAmount = order.total * 100
+    const priceId = STRIPE_PRICE_IDS[count]
 
-    const validSchedules: DeliverySchedule[] = ['one-time', 'bi-weekly', 'weekly']
+    if (!priceId) {
+      return new Response(JSON.stringify({ error: 'Pricing is not configured for this tier.' }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+
+    const validSchedules: DeliverySchedule[] = ['one-time', 'monthly']
     const schedule: DeliverySchedule =
-      count >= 20 &&
       typeof deliverySchedule === 'string' &&
       validSchedules.includes(deliverySchedule as DeliverySchedule)
         ? (deliverySchedule as DeliverySchedule)
         : 'one-time'
 
-    const scheduleLabel =
-      schedule === 'one-time' ? 'One-time delivery' : schedule === 'weekly' ? 'Weekly delivery' : 'Bi-weekly delivery'
     const includesAudit = count >= 20
 
     const sessionParams: Parameters<typeof stripe.checkout.sessions.create>[0] = {
       ui_mode: 'embedded',
       line_items: [
         {
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name: `1-800 Ads — ${order.label}`,
-              description: `${order.adCount} conversion-focused static ads · ${scheduleLabel}${includesAudit ? ' · Free creative audit included' : ''}`,
-            },
-            unit_amount: unitAmount,
-          },
+          price: priceId,
           quantity: 1,
         },
       ],
       mode: 'payment',
-      return_url: `${getOrigin(request)}/order-success/?session_id={CHECKOUT_SESSION_ID}`,
+      return_url: `${getOrigin(request)}/brief/?session_id={CHECKOUT_SESSION_ID}`,
       metadata: {
         product: '1800-ads',
         adCount: String(order.adCount),

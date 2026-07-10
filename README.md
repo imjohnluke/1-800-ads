@@ -28,6 +28,34 @@ Open [http://localhost:4321](http://localhost:4321).
 | `STRIPE_SECRET_KEY` | Stripe secret key |
 | `PUBLIC_STRIPE_PUBLISHABLE_KEY` | Stripe publishable key |
 
+## Stripe products
+
+Checkout uses fixed Stripe Products/Prices (one per tier: 5, 10, 20, 50, 100 ads). To create or refresh them in your Stripe account:
+
+```bash
+npm run stripe:setup
+```
+
+This writes `src/data/stripe-price-ids.ts` with the price IDs. Re-run after changing tier prices in `src/data/1800-ads-pricing.ts` (you may need new prices in Stripe since amounts are immutable on existing prices).
+
+## Creative brief → Notion
+
+Submitted briefs save to a Notion database. Setup:
+
+1. Create a Notion integration at [notion.so/my-integrations](https://www.notion.so/my-integrations) and copy the **Internal Integration Secret** → `NOTION_API_KEY`
+2. Create a full-page database in Notion with these columns (names must match exactly):
+   - **Brand** — Title
+   - **Brand URL** — URL
+   - **Ad Styles** — Text
+   - **Promotions** — Text
+   - **Stripe Session** — Text
+   - **Uploads** — Text
+   - **Submitted** — Date
+3. Share the database with your integration (⋯ → Connect to → your integration)
+4. Copy the database ID from the URL (`notion.so/.../{DATABASE_ID}?v=...`) → `NOTION_BRIEF_DATABASE_ID`
+
+Uploads store filenames and sizes in **Uploads** for now. Notion needs public file URLs for attachments, so actual file storage (S3, Uploadthing, etc.) can be added later if needed.
+
 ## Deploy
 
 ```bash
@@ -37,7 +65,11 @@ npm start
 
 Set the same environment variables in your hosting provider.
 
-## Pages
+## Branding
+
+- **Headlines:** Advercase (`public/fonts/AdvercaseFont-Regular.otf`)
+- **Body text:** Inter (loaded from Google Fonts)
+
 
 - `/` — Landing page with pricing slider and Stripe checkout
 - `/order-success/` — Post-checkout confirmation

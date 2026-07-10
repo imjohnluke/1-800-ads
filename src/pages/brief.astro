@@ -1,0 +1,296 @@
+---
+import PageLayout from '../layouts/PageLayout.astro'
+import BriefForm from '../components/1800-ads/BriefForm'
+
+const sessionId = Astro.url.searchParams.get('session_id') ?? undefined
+---
+
+<PageLayout
+  title="Creative Brief"
+  description="Tell us about your brand so we can concept, design, and deliver your static ads."
+  noIndex={true}
+>
+  <section class="ea-brief-page" data-nav-theme="cream">
+    <div class="ea-brief-shell">
+      <BriefForm client:load sessionId={sessionId} />
+    </div>
+  </section>
+</PageLayout>
+
+<style is:global>
+  .ea-brief-page {
+    min-height: calc(100vh - var(--site-header-height, 64px));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(32px, 6vw, 72px) clamp(20px, 3vw, 28px);
+    background: var(--brand-cream);
+    font-family: var(--ea-font-sans);
+    color: var(--brand-ink);
+  }
+
+  .ea-brief-shell {
+    width: 100%;
+    max-width: 34rem;
+  }
+
+  .ea-brief-form,
+  .ea-brief-success {
+    width: 100%;
+  }
+
+  .ea-brief-progress {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 1.25rem;
+  }
+
+  .ea-brief-progress-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: rgba(42, 8, 16, 0.14);
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+
+  .ea-brief-progress-dot.is-active {
+    background: var(--brand-red);
+    transform: scale(1.08);
+  }
+
+  .ea-brief-progress-dot.is-complete {
+    background: rgba(200, 16, 46, 0.45);
+  }
+
+  .ea-brief-step-label {
+    margin: 0 0 1rem;
+    text-align: center;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--brand-muted);
+  }
+
+  .ea-brief-step {
+    animation: ea-brief-fade 0.25s ease;
+  }
+
+  @keyframes ea-brief-fade {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .ea-brief-title {
+    margin: 0 0 0.75rem;
+    font-family: var(--ea-font-display);
+    font-size: clamp(1.75rem, 4vw, 2.35rem);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    text-align: center;
+    text-wrap: balance;
+  }
+
+  .ea-brief-hint {
+    margin: 0 0 1.5rem;
+    text-align: center;
+    font-size: 0.98rem;
+    line-height: 1.55;
+    color: var(--brand-muted);
+  }
+
+  .ea-brief-input,
+  .ea-brief-textarea {
+    width: 100%;
+    border: 1px solid #e0e0e6;
+    border-radius: 14px;
+    background: var(--brand-white);
+    color: var(--brand-ink);
+    font-family: var(--ea-font-sans);
+    font-size: 1rem;
+    line-height: 1.45;
+    padding: 0.95rem 1rem;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .ea-brief-input:focus,
+  .ea-brief-textarea:focus {
+    outline: none;
+    border-color: rgba(200, 16, 46, 0.45);
+    box-shadow: 0 0 0 3px rgba(200, 16, 46, 0.1);
+  }
+
+  .ea-brief-textarea {
+    resize: vertical;
+    min-height: 140px;
+  }
+
+  .ea-brief-upload-zone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    min-height: 160px;
+    padding: 1.25rem;
+    border: 1.5px dashed rgba(42, 8, 16, 0.18);
+    border-radius: 14px;
+    background: var(--brand-white);
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+
+  .ea-brief-upload-zone:hover {
+    border-color: rgba(200, 16, 46, 0.35);
+    background: #fffdfb;
+  }
+
+  .ea-brief-upload-input {
+    display: none;
+  }
+
+  .ea-brief-upload-title {
+    font-size: 0.98rem;
+    font-weight: 600;
+    color: var(--brand-ink);
+  }
+
+  .ea-brief-upload-sub {
+    font-size: 0.82rem;
+    color: var(--brand-muted);
+  }
+
+  .ea-brief-file-list {
+    list-style: none;
+    margin: 0.85rem 0 0;
+    padding: 0;
+    display: grid;
+    gap: 0.35rem;
+  }
+
+  .ea-brief-file-list li {
+    padding: 0.55rem 0.75rem;
+    border-radius: 10px;
+    background: var(--brand-cream-dark);
+    font-size: 0.85rem;
+    color: var(--brand-ink);
+  }
+
+  .ea-brief-skip {
+    display: block;
+    width: 100%;
+    margin-top: 0.85rem;
+    padding: 0;
+    border: 0;
+    background: none;
+    font-family: var(--ea-font-sans);
+    font-size: 0.875rem;
+    color: var(--brand-muted);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+  }
+
+  .ea-brief-skip:hover {
+    color: var(--brand-ink);
+  }
+
+  .ea-brief-error {
+    margin: 1rem 0 0;
+    text-align: center;
+    font-size: 0.875rem;
+    color: var(--brand-red);
+  }
+
+  .ea-brief-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1.75rem;
+  }
+
+  .ea-brief-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 48px;
+    padding: 0 1.35rem;
+    border-radius: 999px;
+    border: 0;
+    font-family: var(--ea-font-sans);
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 0.15s ease, filter 0.15s ease, opacity 0.15s ease;
+  }
+
+  .ea-brief-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .ea-brief-btn-primary {
+    background: var(--brand-red);
+    color: var(--brand-white);
+  }
+
+  .ea-brief-btn-primary:not(:disabled):hover {
+    filter: brightness(1.05);
+  }
+
+  .ea-brief-btn-ghost {
+    background: transparent;
+    color: var(--brand-muted);
+    border: 1px solid rgba(42, 8, 16, 0.14);
+  }
+
+  .ea-brief-btn-ghost:hover {
+    color: var(--brand-ink);
+    border-color: rgba(42, 8, 16, 0.28);
+  }
+
+  .ea-brief-success {
+    text-align: center;
+  }
+
+  .ea-brief-eyebrow {
+    margin: 0 0 0.75rem;
+    font-family: var(--ea-font-display);
+    font-size: 0.875rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--brand-red);
+  }
+
+  .ea-brief-success-title {
+    margin: 0 0 1rem;
+    font-family: var(--ea-font-display);
+    font-size: clamp(1.85rem, 4vw, 2.35rem);
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  .ea-brief-success-copy {
+    margin: 0 0 1.75rem;
+    font-size: 1rem;
+    line-height: 1.65;
+    color: var(--brand-muted);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ea-brief-step {
+      animation: none;
+    }
+  }
+</style>

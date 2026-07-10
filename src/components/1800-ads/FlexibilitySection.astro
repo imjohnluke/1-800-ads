@@ -2,11 +2,11 @@
 import { FLEXIBILITY_POINTS } from '../../data/1800-ads-flexibility'
 ---
 
-<section class="ea-flex-section" id="flexibility" aria-labelledby="ea-flex-heading" data-ea-flex-section>
+<section class="ea-flex-section ea-section-light" id="flexibility" data-nav-theme="cream" aria-labelledby="ea-flex-heading" data-ea-flex-section>
   <div class="ea-flex-wrap">
     <div class="ea-flex-header" data-ea-flex-header>
       <h2 id="ea-flex-heading" class="ea-flex-title">
-        No big retainer, <span class="ea-flex-title-grad">just good ads</span> whenever you need them.
+        No big retainer, just good ads whenever you need them.
       </h2>
     </div>
 
@@ -33,8 +33,7 @@ import { FLEXIBILITY_POINTS } from '../../data/1800-ads-flexibility'
                   <div class="ea-flex-visual ea-flex-visual-cadence">
                     <div class="ea-flex-pills">
                       <span>One-time</span>
-                      <span class="is-on">Weekly</span>
-                      <span>Bi-weekly</span>
+                      <span class="is-on">Monthly</span>
                     </div>
                   </div>
                 )
@@ -94,19 +93,16 @@ import { FLEXIBILITY_POINTS } from '../../data/1800-ads-flexibility'
 
 <style>
   .ea-flex-section {
-    --ea-ink: #11110f;
-    --ea-muted: #6b6677;
-    --ea-accent: #ff6b2e;
-    --ea-grad: linear-gradient(90deg, #ff8a3d 0%, #ff6b2e 22%, #e84b6f 55%, #9c42e0 80%, #7b3fe4 100%);
-    --ea-card-bg: #f0f0f3;
+    --ea-ink: var(--brand-ink);
+    --ea-muted: var(--brand-muted);
+    --ea-accent: var(--brand-red);
+    --ea-card-bg: var(--brand-cream-dark);
     --ea-card-border: #e0e0e6;
-    --ea-font-display: 'Inter Tight', 'Plus Jakarta Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    --ea-font-sans: 'Inter', 'DM Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
     --ea-pad: clamp(20px, 3vw, 28px);
     --ea-maxw: 1232px;
 
     padding: clamp(104px, 13vw, 152px) 0 clamp(104px, 13vw, 160px);
-    background: #fff;
+    background: var(--brand-cream);
     font-family: var(--ea-font-sans);
     color: var(--ea-ink);
   }
@@ -144,11 +140,8 @@ import { FLEXIBILITY_POINTS } from '../../data/1800-ads-flexibility'
   }
 
   .ea-flex-title-grad {
-    background: var(--ea-grad);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: transparent;
+    color: var(--brand-red);
+    -webkit-text-fill-color: var(--brand-red);
   }
 
   .ea-flex-grid {
@@ -186,7 +179,7 @@ import { FLEXIBILITY_POINTS } from '../../data/1800-ads-flexibility'
 
   .ea-flex-graphic {
     height: 132px;
-    background: linear-gradient(180deg, #faf9fc 0%, #f0f0f3 100%);
+    background: linear-gradient(180deg, #faf9fc 0%, var(--brand-cream-dark) 100%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -225,7 +218,7 @@ import { FLEXIBILITY_POINTS } from '../../data/1800-ads-flexibility'
     width: 22px;
     height: 22px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #ff8a3d, #7b3fe4);
+    background: linear-gradient(135deg, #ff8a3d, var(--brand-red));
     color: #fff;
     font-size: 10px;
     font-weight: 800;
@@ -247,7 +240,7 @@ import { FLEXIBILITY_POINTS } from '../../data/1800-ads-flexibility'
     max-width: 100%;
     padding: 10px 12px;
     border-radius: 16px 16px 16px 4px;
-    background: #fff;
+    background: var(--brand-cream);
     border: 1px solid #e4e4ea;
     box-shadow: 0 4px 14px rgba(17, 17, 15, 0.06);
     font-size: 13px;
@@ -275,7 +268,7 @@ import { FLEXIBILITY_POINTS } from '../../data/1800-ads-flexibility'
     letter-spacing: -0.01em;
     padding: 8px 11px;
     border-radius: 999px;
-    background: #fff;
+    background: var(--brand-cream);
     border: 1px solid #e4e4ea;
     color: var(--ea-muted);
     box-shadow: 0 3px 10px rgba(17, 17, 15, 0.05);
@@ -285,7 +278,7 @@ import { FLEXIBILITY_POINTS } from '../../data/1800-ads-flexibility'
   .ea-flex-pills span.is-on {
     background: rgba(123, 63, 228, 0.1);
     border-color: rgba(123, 63, 228, 0.22);
-    color: #7b3fe4;
+    color: var(--brand-red);
     box-shadow: 0 4px 12px rgba(123, 63, 228, 0.14);
   }
 
@@ -303,7 +296,7 @@ import { FLEXIBILITY_POINTS } from '../../data/1800-ads-flexibility'
     min-width: 148px;
     padding: 12px 14px;
     border-radius: 12px;
-    background: #fff;
+    background: var(--brand-cream);
     border: 1px solid #e4e4ea;
     box-shadow: 0 6px 16px rgba(17, 17, 15, 0.06);
   }
@@ -322,14 +315,14 @@ import { FLEXIBILITY_POINTS } from '../../data/1800-ads-flexibility'
     font-size: 18px;
     font-weight: 800;
     letter-spacing: -0.03em;
-    color: #7b3fe4;
+    color: var(--brand-red);
   }
 
   .ea-flex-pay-monthly {
     position: relative;
     padding: 6px 12px;
     border-radius: 999px;
-    background: #fff;
+    background: var(--brand-cream);
     border: 1px solid #e4e4ea;
     color: #a8a3b3;
     font-size: 11px;
@@ -343,7 +336,7 @@ import { FLEXIBILITY_POINTS } from '../../data/1800-ads-flexibility'
     right: 10px;
     top: 50%;
     height: 1.5px;
-    background: #e84b6f;
+    background: var(--brand-red-dark);
     transform: rotate(-8deg);
     border-radius: 999px;
   }

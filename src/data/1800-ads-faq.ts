@@ -7,7 +7,7 @@ export const FAQ_ITEMS: FaqItem[] = [
   {
     question: 'Is 1-800 Ads a subscription?',
     answer:
-      'No — it’s a one-time purchase. Choose your quantity, pay once, and we deliver. For orders of 20+ ads, you can also select bi-weekly or weekly delivery at checkout.',
+      'No — it’s a one-time purchase. Choose your quantity, pay once, and we deliver. You can also select monthly delivery at checkout if you want ads on a recurring cadence.',
   },
   {
     question: 'How fast will I get my ads?',
@@ -32,7 +32,7 @@ export const FAQ_ITEMS: FaqItem[] = [
   {
     question: 'Can I choose a recurring delivery schedule?',
     answer:
-      "Partially! While there are no retainers on any orders, when you order 20+ ads you can select to have your ads delivered at a cadence of your choice, whether it be bi-weekly or weekly we'll match the testing cadence you prefer.",
+      "Yes — at checkout you can choose one-time delivery or monthly. There are no retainers or subscriptions; you pay per order and pick the cadence that fits your testing schedule.",
   },
   {
     question: 'What if I need changes after delivery?',

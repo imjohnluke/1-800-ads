@@ -14,10 +14,10 @@ import Container from '../components/ui/Container.astro'
         <p class="ea-success-label">Order confirmed</p>
         <h1 class="ea-success-title">You're in — we'll get started on your ads.</h1>
         <p class="ea-success-copy">
-          Check your email for payment confirmation and a link to fill out your creative brief. Once
-          that's in, our team will concept, design, and deliver your statics in under 24 hours.
+          Payment confirmed. Fill out your creative brief so we can concept, design, and deliver your
+          statics in under 24 hours.
         </p>
-        <a class="ea-success-btn" href="/">Back to 1-800 Ads</a>
+        <a class="ea-success-btn" href="/brief/">Fill out your brief</a>
       </div>
     </Container>
   </section>
@@ -26,7 +26,7 @@ import Container from '../components/ui/Container.astro'
 <style>
   .ea-success {
     padding: 6rem 0 8rem;
-    background: linear-gradient(180deg, #f5f0ff, #fff 70%);
+    background: var(--brand-cream);
   }
 
   .ea-success-inner {
@@ -37,29 +37,29 @@ import Container from '../components/ui/Container.astro'
 
   .ea-success-label {
     margin: 0 0 0.75rem;
-    font-family: 'Inter Tight', 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-family: var(--ea-font-display);
     font-size: 0.875rem;
-    font-weight: 700;
+    font-weight: 400;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: #673bec;
+    color: var(--brand-red);
   }
 
   .ea-success-title {
     margin: 0 0 1rem;
-    font-family: 'Inter Tight', 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-family: var(--ea-font-display);
     font-size: clamp(2rem, 4vw, 2.75rem);
-    font-weight: 800;
+    font-weight: 400;
     line-height: 1.1;
-    letter-spacing: -0.03em;
-    color: #11110f;
+    letter-spacing: -0.02em;
+    color: var(--brand-ink);
   }
 
   .ea-success-copy {
     margin: 0 0 2rem;
     font-size: 1.0625rem;
     line-height: 1.7;
-    color: #6b6677;
+    color: var(--brand-muted);
   }
 
   .ea-success-btn {
@@ -69,11 +69,11 @@ import Container from '../components/ui/Container.astro'
     min-height: 48px;
     padding: 0 24px;
     border-radius: 999px;
-    background: linear-gradient(90deg, #ff8a3d 0%, #ff6b2e 22%, #e84b6f 55%, #9c42e0 80%, #7b3fe4 100%);
-    color: #fff;
-    font-family: 'Inter Tight', 'Plus Jakarta Sans', system-ui, sans-serif;
+    background: var(--brand-yellow);
+    color: var(--brand-ink);
+    font-family: var(--ea-font-sans);
     font-size: 15px;
-    font-weight: 700;
+    font-weight: 600;
     text-decoration: none;
   }
 </style>

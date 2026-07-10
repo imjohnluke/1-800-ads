@@ -2,7 +2,7 @@
 import { FAQ_ITEMS } from '../../data/1800-ads-faq'
 ---
 
-<section class="ea-faq-section" id="faq" aria-labelledby="ea-faq-heading">
+<section class="ea-faq-section ea-section-light" id="faq" data-nav-theme="cream" aria-labelledby="ea-faq-heading">
   <div class="ea-faq-wrap">
     <div class="ea-faq-header-row">
       <div>
@@ -56,19 +56,12 @@ import { FAQ_ITEMS } from '../../data/1800-ads-faq'
 
 <style>
   .ea-faq-section {
-    --ea-ink: #11110f;
-    --ea-muted: #6b6677;
-    --ea-accent: #ff6b2e;
-    --ea-font-display: 'Inter Tight', 'Plus Jakarta Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    --ea-font-sans: 'Inter', 'DM Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    --ea-font-mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;
     --ea-pad: clamp(20px, 3vw, 28px);
     --ea-maxw: 1232px;
-
-    background: #fff;
+    background: var(--brand-cream);
     padding: clamp(52px, 7vw, 88px) 0;
     font-family: var(--ea-font-sans);
-    color: var(--ea-ink);
+    color: var(--brand-ink);
   }
 
   .ea-faq-wrap {

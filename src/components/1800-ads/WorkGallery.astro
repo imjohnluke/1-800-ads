@@ -2,13 +2,12 @@
 import { WORK_EXAMPLES } from '../../data/1800-ads-work'
 ---
 
-<section class="ea-work-section" id="work" aria-labelledby="ea-work-heading">
+<section class="ea-work-section ea-section-light" id="work" data-nav-theme="cream" aria-labelledby="ea-work-heading">
   <div class="ea-work-wrap">
     <div class="ea-work-header">
-      <span class="ea-work-eyebrow">Examples of work</span>
       <h2 id="ea-work-heading" class="ea-work-title">
         Angles that convert.<br />
-        Designs that <span class="ea-work-grad">stand out.</span>
+        Designs that stand out.
       </h2>
       <p class="ea-work-subtitle">
         A sample of conversion-focused creatives our team has designed and delivered — ready to run on Meta.
@@ -31,21 +30,13 @@ import { WORK_EXAMPLES } from '../../data/1800-ads-work'
 
 <style>
   .ea-work-section {
-    --ea-bg: #ffffff;
-    --ea-ink: #11110f;
-    --ea-muted: #6b6677;
-    --ea-line: #e2dbf0;
-    --ea-accent: #ff6b2e;
-    --ea-grad: linear-gradient(90deg, #ff8a3d 0%, #ff6b2e 22%, #e84b6f 55%, #9c42e0 80%, #7b3fe4 100%);
-    --ea-font-display: 'Inter Tight', 'Plus Jakarta Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    --ea-font-sans: 'Inter', 'DM Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
     --ea-pad: clamp(20px, 3vw, 28px);
     --ea-maxw: 1232px;
 
     padding: clamp(60px, 8vw, 96px) 0;
-    background: var(--ea-bg);
+    background: var(--brand-cream);
     font-family: var(--ea-font-sans);
-    color: var(--ea-ink);
+    color: var(--brand-ink);
   }
 
   .ea-work-wrap {
@@ -63,34 +54,21 @@ import { WORK_EXAMPLES } from '../../data/1800-ads-work'
     align-items: center;
   }
 
-  .ea-work-eyebrow {
-    display: inline-block;
-    font-family: 'JetBrains Mono', ui-monospace, monospace;
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--ea-accent);
-  }
-
   .ea-work-title {
-    margin: 12px 0 0;
+    margin: 0;
     font-family: var(--ea-font-display);
-    font-weight: 800;
+    font-weight: 400;
     font-size: clamp(36px, 4.8vw, 56px);
     line-height: 0.93;
     letter-spacing: -0.036em;
     word-spacing: 0.045em;
     text-wrap: balance;
-    color: var(--ea-ink);
+    color: var(--brand-ink);
   }
 
   .ea-work-grad {
-    background: var(--ea-grad);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: transparent;
+    color: var(--brand-red);
+    -webkit-text-fill-color: var(--brand-red);
   }
 
   .ea-work-subtitle {
@@ -99,7 +77,7 @@ import { WORK_EXAMPLES } from '../../data/1800-ads-work'
     font-size: clamp(16px, 1.45vw, 18px);
     line-height: 1.48;
     letter-spacing: -0.02em;
-    color: var(--ea-muted);
+    color: var(--brand-muted);
   }
 
   .ea-work-grid {
@@ -134,8 +112,8 @@ import { WORK_EXAMPLES } from '../../data/1800-ads-work'
     aspect-ratio: 4 / 5;
     border-radius: 12px;
     overflow: hidden;
-    border: 1px solid var(--ea-line);
-    background: #fff;
+    border: 1px solid var(--brand-line);
+    background: var(--brand-cream);
     box-shadow:
       0 4px 16px rgba(17, 24, 39, 0.06),
       0 1px 3px rgba(17, 24, 39, 0.04);

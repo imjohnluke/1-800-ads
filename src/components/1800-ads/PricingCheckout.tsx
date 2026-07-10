@@ -3,23 +3,37 @@ import { loadStripe } from '@stripe/stripe-js'
 import { EmbeddedCheckoutProvider, EmbeddedCheckout } from '@stripe/react-stripe-js'
 import { formatUsd, getOrderSummary, getDeliveryScheduleLabel, type DeliverySchedule } from '../../data/1800-ads-pricing'
 
-const stripePromise = loadStripe(import.meta.env.PUBLIC_STRIPE_PUBLISHABLE_KEY)
+const stripePublishableKey = import.meta.env.PUBLIC_STRIPE_PUBLISHABLE_KEY
+const stripePromise = stripePublishableKey ? loadStripe(stripePublishableKey) : null
 
 export default function PricingCheckout() {
   const [checkoutOpen, setCheckoutOpen] = useState(false)
+  const [checkoutError, setCheckoutError] = useState<string | null>(null)
   const [adCount, setAdCount] = useState(10)
   const [deliverySchedule, setDeliverySchedule] = useState<DeliverySchedule>('one-time')
 
   const order = getOrderSummary(adCount)
   const deliveryLabel = getDeliveryScheduleLabel(deliverySchedule)
 
-  const closeCheckout = useCallback(() => setCheckoutOpen(false), [])
+  const closeCheckout = useCallback(() => {
+    setCheckoutOpen(false)
+    setCheckoutError(null)
+  }, [])
 
   useEffect(() => {
+    document.dispatchEvent(new Event('1800-checkout-ready'))
+
     const handler = (e: Event) => {
+      if (!stripePublishableKey) {
+        setCheckoutError('Checkout is not configured. Missing Stripe publishable key.')
+        setCheckoutOpen(true)
+        return
+      }
+
       const detail = (e as CustomEvent<{ adCount: number; deliverySchedule?: DeliverySchedule }>).detail
       if (detail?.adCount) setAdCount(detail.adCount)
       setDeliverySchedule(detail?.deliverySchedule ?? 'one-time')
+      setCheckoutError(null)
       setCheckoutOpen(true)
     }
     document.addEventListener('open-1800-checkout', handler)
@@ -40,6 +54,10 @@ export default function PricingCheckout() {
   }, [checkoutOpen, closeCheckout])
 
   const fetchClientSecret = useCallback(async () => {
+    if (!stripePublishableKey) {
+      throw new Error('Missing Stripe publishable key')
+    }
+
     const coupon = new URLSearchParams(window.location.search).get('coupon') || undefined
     let fbclid = ''
     try {
@@ -83,9 +101,15 @@ export default function PricingCheckout() {
           </button>
         </div>
         <div className="checkout-body">
-          <EmbeddedCheckoutProvider stripe={stripePromise} options={{ fetchClientSecret }}>
-            <EmbeddedCheckout />
-          </EmbeddedCheckoutProvider>
+          {checkoutError ? (
+            <p className="checkout-error">{checkoutError}</p>
+          ) : stripePromise ? (
+            <EmbeddedCheckoutProvider stripe={stripePromise} options={{ fetchClientSecret }}>
+              <EmbeddedCheckout />
+            </EmbeddedCheckoutProvider>
+          ) : (
+            <p className="checkout-error">Checkout is unavailable right now. Please try again later.</p>
+          )}
         </div>
       </div>
 
@@ -132,7 +156,7 @@ export default function PricingCheckout() {
         }
 
         .checkout-title {
-          font-family: var(--font-display, system-ui);
+          font-family: var(--ea-font-display);
           font-size: 20px;
           font-weight: 700;
           color: #111827;
@@ -141,6 +165,7 @@ export default function PricingCheckout() {
         }
 
         .checkout-subtitle {
+          font-family: var(--ea-font-sans, 'Inter', sans-serif);
           font-size: 14px;
           color: #6b7280;
           margin: 4px 0 0;
@@ -171,6 +196,15 @@ export default function PricingCheckout() {
           overflow-y: auto;
           padding: 0;
           min-height: 400px;
+        }
+
+        .checkout-error {
+          margin: 0;
+          padding: 24px;
+          font-family: var(--ea-font-sans, 'Inter', sans-serif);
+          font-size: 14px;
+          line-height: 1.5;
+          color: #b42318;
         }
 
         @keyframes checkoutFadeIn {

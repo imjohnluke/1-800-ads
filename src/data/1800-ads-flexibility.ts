@@ -14,7 +14,7 @@ export const FLEXIBILITY_POINTS: FlexibilityPoint[] = [
   {
     title: 'Choose your cadence',
     description:
-      'One-time batches, bi-weekly, or weekly delivery. Scale up for a launch or pause when you are stocked.',
+      'One-time batches or monthly delivery. Scale up for a launch or pause when you are stocked.',
     icon: 'cadence',
   },
   {
