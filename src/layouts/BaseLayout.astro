@@ -14,7 +14,7 @@ interface Props {
 const {
   title,
   description = 'Order professional static ad creatives à la carte. No subscription — concept, design, and delivery in under 24 hours.',
-  image = '/images/1-800-ads/logo-white.png',
+  image = '/images/1-800-ads/og-image.png',
   canonicalURL = Astro.url.href,
   noIndex = false,
 } = Astro.props
@@ -27,7 +27,8 @@ const fullTitle = title === SITE_NAME ? `${SITE_NAME} — Static Ad Creatives On
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" type="image/png" href="/images/1-800-ads/logo-white.png" />
+    <link rel="icon" type="image/png" href="/images/1-800-ads/favicon.png" />
+    <link rel="apple-touch-icon" href="/images/1-800-ads/favicon.png" />
     <link rel="canonical" href={canonicalURL} />
 
     <title>{fullTitle}</title>
@@ -39,6 +40,9 @@ const fullTitle = title === SITE_NAME ? `${SITE_NAME} — Static Ad Creatives On
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={new URL(image, Astro.site)} />
+    <meta property="og:image:width" content="1024" />
+    <meta property="og:image:height" content="537" />
+    <meta property="og:image:alt" content="1-800 Ads — static ad creatives on demand" />
     <meta property="og:site_name" content={SITE_NAME} />
 
     <meta name="twitter:card" content="summary_large_image" />
