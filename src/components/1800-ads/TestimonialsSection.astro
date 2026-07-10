@@ -5,7 +5,6 @@ import { TESTIMONIALS_1800 } from '../../data/1800-ads-testimonials'
 <section class="ea-testimonials" id="testimonials" data-nav-theme="cream" aria-labelledby="ea-testimonials-heading">
   <div class="ea-testimonials-wrap">
     <div class="ea-testimonials-header">
-      <span class="ea-testimonials-eyebrow">Customer stories</span>
       <h2 id="ea-testimonials-heading" class="ea-testimonials-title">
         Why brands order ads<br />
         <span class="ea-testimonials-title-grad">again and again.</span>
@@ -67,18 +66,8 @@ import { TESTIMONIALS_1800 } from '../../data/1800-ads-testimonials'
     text-align: center;
   }
 
-  .ea-testimonials-eyebrow {
-    display: inline-block;
-    font-family: var(--ea-font-sans);
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--ea-accent);
-  }
-
   .ea-testimonials-title {
-    margin: 12px 0 0;
+    margin: 0;
     font-family: var(--ea-font-display);
     font-weight: 800;
     font-size: clamp(30px, 4.2vw, 48px);
@@ -103,7 +92,27 @@ import { TESTIMONIALS_1800 } from '../../data/1800-ads-testimonials'
 
   @media (max-width: 720px) {
     .ea-testimonials-grid {
-      grid-template-columns: 1fr;
+      display: flex;
+      flex-direction: row;
+      gap: 12px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-padding-inline: var(--ea-pad);
+      margin-inline: calc(-1 * var(--ea-pad));
+      padding: 0 var(--ea-pad) 6px;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-x: contain;
+      scrollbar-width: none;
+    }
+
+    .ea-testimonials-grid::-webkit-scrollbar {
+      display: none;
+    }
+
+    .ea-testimonial-card {
+      flex: 0 0 min(300px, calc(100vw - var(--ea-pad) * 2 - 28px));
+      scroll-snap-align: start;
+      min-height: auto;
     }
   }
 
