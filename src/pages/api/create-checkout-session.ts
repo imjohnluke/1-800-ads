@@ -1,6 +1,7 @@
 export const prerender = false
 
 import type { APIRoute } from 'astro'
+import type Stripe from 'stripe'
 import { getStripe } from '../../lib/stripe'
 import { getOrderSummary, clampAdCount, type DeliverySchedule } from '../../data/1800-ads-pricing'
 import { STRIPE_PRICE_IDS } from '../../data/stripe-price-ids'
@@ -61,7 +62,7 @@ export const POST: APIRoute = async ({ request }) => {
 
     const includesAudit = count >= 20
 
-    const sessionParams: Parameters<ReturnType<typeof getStripe>['checkout']['sessions']['create']>[0] = {
+    const sessionParams: Stripe.Checkout.SessionCreateParams = {
       ui_mode: 'embedded',
       line_items: [
         {
