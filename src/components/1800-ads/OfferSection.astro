@@ -257,6 +257,8 @@ import { PROCESS_STEPS } from '../../data/1800-ads-offer'
     --ea-shell-pad-top: 70px;
     --ea-pad: clamp(20px, 3vw, 28px);
     --ea-maxw: 1232px;
+    --ea-card-bg: var(--brand-cream-dark);
+    --ea-card-border: var(--brand-line);
 
     padding: clamp(36px, 5vw, 56px) 0 clamp(56px, 7vw, 88px);
     background: var(--brand-cream);
@@ -421,7 +423,7 @@ import { PROCESS_STEPS } from '../../data/1800-ads-offer'
   .ea-visual-brief {
     width: min(100%, 420px);
     background: var(--brand-cream);
-    border: 1px solid #e8e2f2;
+    border: 1px solid var(--brand-line);
     border-radius: 16px;
     box-shadow: 0 12px 32px rgba(17, 17, 15, 0.06);
     overflow: hidden;
@@ -451,19 +453,19 @@ import { PROCESS_STEPS } from '../../data/1800-ads-offer'
     display: flex;
     gap: 6px;
     padding: 12px 14px;
-    border-bottom: 1px solid #f0ebf8;
-    background: #fcfbff;
+    border-bottom: 1px solid var(--brand-line);
+    background: var(--brand-cream);
   }
 
   .ea-visual-brief-bar span {
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: var(--brand-line);
+    background: rgba(200, 16, 46, 0.22);
   }
 
   .ea-visual-brief-bar span:first-child {
-    background: #ff8a3d;
+    background: var(--brand-red);
   }
 
   .ea-visual-brief-bar span:nth-child(2) {
@@ -471,7 +473,7 @@ import { PROCESS_STEPS } from '../../data/1800-ads-offer'
   }
 
   .ea-visual-brief-bar span:nth-child(3) {
-    background: var(--brand-red);
+    background: rgba(200, 16, 46, 0.45);
   }
 
   .ea-visual-brief-body {
@@ -559,7 +561,7 @@ import { PROCESS_STEPS } from '../../data/1800-ads-offer'
   .ea-visual-delivery {
     width: min(100%, 400px);
     background: var(--brand-cream);
-    border: 1px solid #e8e2f2;
+    border: 1px solid var(--brand-line);
     border-radius: 16px;
     padding: 18px;
     box-shadow: 0 12px 32px rgba(17, 17, 15, 0.06);
@@ -574,8 +576,9 @@ import { PROCESS_STEPS } from '../../data/1800-ads-offer'
     font-weight: 500;
     padding: 6px 10px;
     border-radius: 999px;
-    background: rgba(255, 107, 46, 0.1);
-    color: var(--ea-accent);
+    background: rgba(200, 16, 46, 0.08);
+    border: 1px solid rgba(200, 16, 46, 0.18);
+    color: var(--brand-red);
     margin-bottom: 14px;
   }
 
@@ -596,8 +599,8 @@ import { PROCESS_STEPS } from '../../data/1800-ads-offer'
     color: var(--ea-ink);
     padding: 10px 12px;
     border-radius: 10px;
-    background: #faf8ff;
-    border: 1px solid #efe8f8;
+    background: rgba(200, 16, 46, 0.04);
+    border: 1px solid rgba(200, 16, 46, 0.12);
   }
 
   .ea-visual-file-icon {

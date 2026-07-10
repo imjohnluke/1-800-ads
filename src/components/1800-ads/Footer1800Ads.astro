@@ -9,6 +9,17 @@ const sectionLinks = [
   { label: 'Why 1-800 Ads', href: '#why' },
   { label: 'FAQ', href: '#faq' },
 ]
+
+const policyLinks = [
+  { label: 'Privacy policy', href: '/privacy' },
+  { label: 'Terms of service', href: '/terms' },
+]
+
+const socialLinks = [
+  { label: 'Instagram', href: 'https://instagram.com/1800ads' },
+  { label: 'LinkedIn', href: 'https://linkedin.com/company/1800ads' },
+  { label: 'X', href: 'https://x.com/1800ads' },
+]
 ---
 
 <footer class="ea-footer" data-nav-theme="cream">
@@ -16,7 +27,7 @@ const sectionLinks = [
     <div class="ea-footer-grid">
       <div class="ea-footer-brand">
         <img
-          src="/images/1-800-ads/logo-white.png"
+          src="/images/1-800-ads/logo-black.png?v=2"
           alt="1-800 Ads"
           class="ea-footer-logo"
           width="160"
@@ -32,9 +43,23 @@ const sectionLinks = [
           {sectionLinks.map((link) => <a href={link.href}>{link.label}</a>)}
         </nav>
       </div>
-    </div>
 
-    <p class="ea-footer-copyright">&copy;2026 1-800 Ads | Los Angeles, CA | All Rights Reserved.</p>
+      <div class="ea-footer-col">
+        <h4 class="ea-footer-col-title">Policies &amp; social</h4>
+        <nav class="ea-footer-links" aria-label="Policies">
+          {policyLinks.map((link) => <a href={link.href}>{link.label}</a>)}
+        </nav>
+        <nav class="ea-footer-links ea-footer-social" aria-label="Social">
+          {
+            socialLinks.map((link) => (
+              <a href={link.href} target="_blank" rel="noopener noreferrer">
+                {link.label}
+              </a>
+            ))
+          }
+        </nav>
+      </div>
+    </div>
   </Container>
 </footer>
 
@@ -54,9 +79,8 @@ const sectionLinks = [
 
   .ea-footer-grid {
     display: grid;
-    grid-template-columns: 1.4fr 1fr;
+    grid-template-columns: 1.4fr 1fr 1fr;
     gap: clamp(32px, 5vw, 56px);
-    margin-bottom: 2rem;
   }
 
   .ea-footer-brand {
@@ -72,7 +96,6 @@ const sectionLinks = [
     height: 34px;
     width: auto;
     object-fit: contain;
-    filter: brightness(0) saturate(100%);
   }
 
   .ea-footer-tagline {
@@ -117,11 +140,10 @@ const sectionLinks = [
     color: var(--brand-ink);
   }
 
-  .ea-footer-copyright {
-    margin: 2rem 0 0;
-    text-align: center;
-    font-size: 0.8125rem;
-    color: rgba(42, 8, 16, 0.55);
+  .ea-footer-social {
+    margin-top: 4px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(42, 8, 16, 0.08);
   }
 
   @media (max-width: 768px) {

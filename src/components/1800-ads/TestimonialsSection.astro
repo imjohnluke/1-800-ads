@@ -11,36 +11,177 @@ import { TESTIMONIALS_1800 } from '../../data/1800-ads-testimonials'
       </h2>
     </div>
 
-    <ul class="ea-testimonials-grid">
+    <div class="ea-testimonials-carousel" data-ea-testimonials-carousel>
+      <button
+        type="button"
+        class="ea-testimonials-nav ea-testimonials-nav--prev"
+        data-ea-testimonials-prev
+        aria-label="Previous testimonial"
+        disabled
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="m15 18-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+      </button>
+
+      <div
+        class="ea-testimonials-track"
+        data-ea-testimonials-track
+        tabindex="0"
+        role="region"
+        aria-label="Customer testimonials"
+      >
+        <ul class="ea-testimonials-grid">
+          {
+            TESTIMONIALS_1800.map((item) => (
+              <li class="ea-testimonial-card">
+                <div class="ea-testimonial-top">
+                  <div class="ea-testimonial-stars" aria-label={`${item.rating} out of 5 stars`}>
+                    {
+                      Array.from({ length: item.rating }).map(() => (
+                        <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+                          <path
+                            d="M12 2.5 14.9 9.2 22 10.1 16.8 14.8 18.2 22 12 18.4 5.8 22 7.2 14.8 2 10.1 9.1 9.2 12 2.5Z"
+                            fill="currentColor"
+                          />
+                        </svg>
+                      ))
+                    }
+                  </div>
+                  <h3 class="ea-testimonial-headline">{item.headline}</h3>
+                </div>
+                <blockquote class="ea-testimonial-quote">&ldquo;{item.quote}&rdquo;</blockquote>
+                <div class="ea-testimonial-author">
+                  <img
+                    src={item.avatar}
+                    alt=""
+                    class="ea-testimonial-avatar"
+                    width="48"
+                    height="48"
+                    loading="lazy"
+                    aria-hidden="true"
+                  />
+                  <div>
+                    <p class="ea-testimonial-name">{item.name}</p>
+                    <p class="ea-testimonial-role">{item.role}</p>
+                  </div>
+                </div>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <button
+        type="button"
+        class="ea-testimonials-nav ea-testimonials-nav--next"
+        data-ea-testimonials-next
+        aria-label="Next testimonial"
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="m9 18 6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+      </button>
+    </div>
+
+    <div class="ea-testimonials-dots" data-ea-testimonials-dots role="tablist" aria-label="Testimonial slides">
       {
-        TESTIMONIALS_1800.map((item) => (
-          <li class="ea-testimonial-card">
-            <blockquote class="ea-testimonial-quote">&ldquo;{item.quote}&rdquo;</blockquote>
-            <div class="ea-testimonial-author">
-              <img
-                src={item.avatar}
-                alt={item.name}
-                class="ea-testimonial-avatar"
-                width="48"
-                height="48"
-                loading="lazy"
-              />
-              <div>
-                <p class="ea-testimonial-name">{item.name}</p>
-                <p class="ea-testimonial-role">{item.role}</p>
-              </div>
-            </div>
-          </li>
+        TESTIMONIALS_1800.map((_, index) => (
+          <button
+            type="button"
+            class:list={['ea-testimonials-dot', { 'is-active': index === 0 }]}
+            data-index={index}
+            role="tab"
+            aria-label={`Go to testimonial ${index + 1}`}
+            aria-selected={index === 0 ? 'true' : 'false'}
+          />
         ))
       }
-    </ul>
+    </div>
   </div>
 </section>
+
+<script>
+  function initTestimonialsCarousel() {
+    document.querySelectorAll('[data-ea-testimonials-carousel]').forEach((root) => {
+      if (root.hasAttribute('data-ea-carousel-bound')) return
+      root.setAttribute('data-ea-carousel-bound', '')
+
+      const track = root.querySelector('[data-ea-testimonials-track]') as HTMLElement | null
+      const prev = root.querySelector('[data-ea-testimonials-prev]') as HTMLButtonElement | null
+      const next = root.querySelector('[data-ea-testimonials-next]') as HTMLButtonElement | null
+      const dotsWrap = root.parentElement?.querySelector('[data-ea-testimonials-dots]')
+      const dots = dotsWrap
+        ? Array.from(dotsWrap.querySelectorAll<HTMLButtonElement>('.ea-testimonials-dot'))
+        : []
+      const cards = Array.from(root.querySelectorAll('.ea-testimonial-card')) as HTMLElement[]
+
+      if (!track || !prev || !next || cards.length === 0) return
+
+      const getGap = () => {
+        const styles = getComputedStyle(track.querySelector('.ea-testimonials-grid')!)
+        return Number.parseFloat(styles.columnGap || styles.gap || '0') || 0
+      }
+
+      const getScrollStep = () => {
+        const card = cards[0]
+        return card.offsetWidth + getGap()
+      }
+
+      const getActiveIndex = () => {
+        const step = getScrollStep()
+        if (step <= 0) return 0
+        return Math.round(track.scrollLeft / step)
+      }
+
+      const updateControls = () => {
+        const maxScroll = track.scrollWidth - track.clientWidth
+        const atStart = track.scrollLeft <= 2
+        const atEnd = track.scrollLeft >= maxScroll - 2
+        prev.disabled = atStart
+        next.disabled = atEnd
+
+        const activeIndex = getActiveIndex()
+        dots.forEach((dot, index) => {
+          dot.classList.toggle('is-active', active)
+          dot.setAttribute('aria-selected', active ? 'true' : 'false')
+        })
+      }
+
+      const scrollToIndex = (index: number) => {
+        track.scrollTo({ left: getScrollStep() * index, behavior: 'smooth' })
+      }
+
+      prev.addEventListener('click', () => {
+        track.scrollBy({ left: -getScrollStep(), behavior: 'smooth' })
+      })
+
+      next.addEventListener('click', () => {
+        track.scrollBy({ left: getScrollStep(), behavior: 'smooth' })
+      })
+
+      dots.forEach((dot) => {
+        dot.addEventListener('click', () => {
+          const index = Number(dot.getAttribute('data-index') ?? '0')
+          scrollToIndex(index)
+        })
+      })
+
+      track.addEventListener('scroll', updateControls, { passive: true })
+      window.addEventListener('resize', updateControls)
+      updateControls()
+    })
+  }
+
+  initTestimonialsCarousel()
+  document.addEventListener('astro:page-load', initTestimonialsCarousel)
+</script>
 
 <style>
   .ea-testimonials {
     --ea-pad: clamp(20px, 3vw, 28px);
     --ea-maxw: 1232px;
+    --ea-carousel-gap: clamp(16px, 2vw, 20px);
 
     padding: 0 0 clamp(56px, 7vw, 88px);
     background: var(--brand-cream);
@@ -81,50 +222,97 @@ import { TESTIMONIALS_1800 } from '../../data/1800-ads-testimonials'
     -webkit-text-fill-color: var(--brand-red);
   }
 
+  .ea-testimonials-carousel {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: clamp(10px, 1.5vw, 16px);
+  }
+
+  .ea-testimonials-nav {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--brand-line);
+    background: var(--brand-cream-dark);
+    color: var(--brand-ink);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition:
+      background 0.18s ease,
+      border-color 0.18s ease,
+      opacity 0.18s ease;
+  }
+
+  .ea-testimonials-nav:hover:not(:disabled) {
+    background: var(--brand-cream);
+    border-color: rgba(42, 8, 16, 0.2);
+  }
+
+  .ea-testimonials-nav:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  .ea-testimonials-track {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+  }
+
+  .ea-testimonials-track::-webkit-scrollbar {
+    display: none;
+  }
+
   .ea-testimonials-grid {
     list-style: none;
     margin: 0;
     padding: 0;
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: clamp(16px, 2vw, 20px);
-  }
-
-  @media (max-width: 720px) {
-    .ea-testimonials-grid {
-      display: flex;
-      flex-direction: row;
-      gap: 12px;
-      overflow-x: auto;
-      scroll-snap-type: x mandatory;
-      scroll-padding-inline: var(--ea-pad);
-      margin-inline: calc(-1 * var(--ea-pad));
-      padding: 0 var(--ea-pad) 6px;
-      -webkit-overflow-scrolling: touch;
-      overscroll-behavior-x: contain;
-      scrollbar-width: none;
-    }
-
-    .ea-testimonials-grid::-webkit-scrollbar {
-      display: none;
-    }
-
-    .ea-testimonial-card {
-      flex: 0 0 min(300px, calc(100vw - var(--ea-pad) * 2 - 28px));
-      scroll-snap-align: start;
-      min-height: auto;
-    }
+    display: flex;
+    gap: var(--ea-carousel-gap);
   }
 
   .ea-testimonial-card {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 16px;
+    flex: 0 0 calc((100% - var(--ea-carousel-gap)) / 2);
+    scroll-snap-align: start;
     min-height: 100%;
     padding: clamp(24px, 3vw, 28px);
     border-radius: 18px;
     border: 1px solid var(--brand-line);
     background: var(--brand-cream-dark);
+    box-shadow: 0 4px 16px rgba(17, 17, 15, 0.04);
+  }
+
+  .ea-testimonial-top {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .ea-testimonial-stars {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    color: var(--brand-red);
+  }
+
+  .ea-testimonial-headline {
+    margin: 0;
+    font-family: var(--ea-font-display);
+    font-size: clamp(1.05rem, 1.5vw, 1.2rem);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: var(--brand-ink);
   }
 
   .ea-testimonial-quote {
@@ -149,7 +337,7 @@ import { TESTIMONIALS_1800 } from '../../data/1800-ads-testimonials'
     object-fit: cover;
     flex-shrink: 0;
     background: var(--brand-cream);
-    border: 1px solid var(--ea-line);
+    border: 1px solid var(--brand-line);
   }
 
   .ea-testimonial-name {
@@ -165,5 +353,49 @@ import { TESTIMONIALS_1800 } from '../../data/1800-ads-testimonials'
     margin: 2px 0 0;
     font-size: 0.8125rem;
     color: var(--brand-muted);
+  }
+
+  .ea-testimonials-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 20px;
+  }
+
+  .ea-testimonials-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: 0;
+    padding: 0;
+    background: rgba(42, 8, 16, 0.18);
+    cursor: pointer;
+    transition: background 0.18s ease, transform 0.18s ease;
+  }
+
+  .ea-testimonials-dot.is-active {
+    background: var(--brand-red);
+    transform: scale(1.15);
+  }
+
+  @media (max-width: 720px) {
+    .ea-testimonials-carousel {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0;
+    }
+
+    .ea-testimonials-nav {
+      display: none;
+    }
+
+    .ea-testimonials-track {
+      margin-inline: calc(-1 * var(--ea-pad));
+      padding-inline: var(--ea-pad);
+      scroll-padding-inline: var(--ea-pad);
+    }
+
+    .ea-testimonial-card {
+      flex-basis: min(300px, calc(100vw - var(--ea-pad) * 2 - 28px));
+    }
   }
 </style>

@@ -10,13 +10,22 @@ const navLinks = [
 
 <div class="header-wrapper" id="header-wrapper">
   <header class="site-header" id="site-header">
-    <a href="/" class="brand-link">
+    <a href="/" class="brand-link" aria-label="1-800 Ads">
       <img
         src="/images/1-800-ads/logo-white.png"
-        alt="1-800 Ads"
-        class="brand-logo"
+        alt=""
+        class="brand-logo brand-logo--light"
         width="160"
         height="35"
+        aria-hidden="true"
+      />
+      <img
+        src="/images/1-800-ads/logo-black.png?v=2"
+        alt=""
+        class="brand-logo brand-logo--dark"
+        width="160"
+        height="35"
+        aria-hidden="true"
       />
     </a>
 
@@ -38,6 +47,8 @@ const navLinks = [
       <span></span>
     </button>
   </header>
+
+  <div class="mobile-nav-backdrop" id="mobile-nav-backdrop" hidden aria-hidden="true"></div>
 
   <nav class="mobile-nav" id="mobile-nav" aria-label="Mobile navigation" hidden>
     {navLinks.map((item) => <a href={item.href}>{item.label}</a>)}
@@ -82,24 +93,38 @@ const navLinks = [
 
     const toggle = document.getElementById('menu-toggle')
     const mobileNav = document.getElementById('mobile-nav')
-    if (!toggle || !mobileNav || toggle.hasAttribute('data-bound')) return
+    const backdrop = document.getElementById('mobile-nav-backdrop')
+    const wrapper = document.getElementById('header-wrapper')
+    if (!toggle || !mobileNav || !wrapper || toggle.hasAttribute('data-bound')) return
     toggle.setAttribute('data-bound', '')
 
-    toggle.addEventListener('click', () => {
-      const open = mobileNav.hasAttribute('hidden')
+    const setMenuOpen = (open: boolean) => {
       if (open) {
         mobileNav.removeAttribute('hidden')
+        backdrop?.removeAttribute('hidden')
         toggle.setAttribute('aria-expanded', 'true')
+        wrapper.classList.add('is-menu-open')
+        document.body.classList.add('is-mobile-nav-open')
       } else {
         mobileNav.setAttribute('hidden', '')
+        backdrop?.setAttribute('hidden', '')
         toggle.setAttribute('aria-expanded', 'false')
+        wrapper.classList.remove('is-menu-open')
+        document.body.classList.remove('is-mobile-nav-open')
       }
+    }
+
+    toggle.addEventListener('click', () => {
+      setMenuOpen(mobileNav.hasAttribute('hidden'))
+    })
+
+    backdrop?.addEventListener('click', () => {
+      setMenuOpen(false)
     })
 
     mobileNav.querySelectorAll('a').forEach((link) => {
       link.addEventListener('click', () => {
-        mobileNav.setAttribute('hidden', '')
-        toggle.setAttribute('aria-expanded', 'false')
+        setMenuOpen(false)
       })
     })
   }
@@ -119,6 +144,8 @@ const navLinks = [
   }
 
   .site-header {
+    position: relative;
+    z-index: 2;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -190,15 +217,26 @@ const navLinks = [
     color: var(--brand-red);
   }
 
-  .header-wrapper.nav-theme-cream .brand-logo,
-  .header-wrapper.nav-theme-yellow .brand-logo {
-    filter: brightness(0) saturate(100%);
+  .header-wrapper.nav-theme-cream .brand-logo--light,
+  .header-wrapper.nav-theme-yellow .brand-logo--light {
+    display: none;
   }
 
-  .header-wrapper.is-at-top .brand-logo,
-  .header-wrapper.nav-theme-red .brand-logo,
-  .header-wrapper.nav-theme-dark .brand-logo {
-    filter: none;
+  .header-wrapper.is-at-top .brand-logo--dark,
+  .header-wrapper.nav-theme-red .brand-logo--dark,
+  .header-wrapper.nav-theme-dark .brand-logo--dark {
+    display: none;
+  }
+
+  .header-wrapper.is-at-top .brand-logo--light,
+  .header-wrapper.nav-theme-red .brand-logo--light,
+  .header-wrapper.nav-theme-dark .brand-logo--light {
+    display: block;
+  }
+
+  .header-wrapper.nav-theme-cream .brand-logo--dark,
+  .header-wrapper.nav-theme-yellow .brand-logo--dark {
+    display: block;
   }
 
   .header-wrapper.is-at-top .menu-toggle span,
@@ -227,6 +265,10 @@ const navLinks = [
     object-fit: contain;
   }
 
+  .brand-logo--dark {
+    display: none;
+  }
+
   .desktop-nav {
     display: none;
     align-items: center;
@@ -247,13 +289,19 @@ const navLinks = [
     min-height: 40px;
     padding: 0 18px;
     border-radius: 999px;
-    background: var(--brand-yellow);
-    color: var(--brand-ink);
+    background: var(--brand-red);
+    color: var(--brand-white);
     font-family: var(--ea-font-sans);
     font-size: 15px;
     font-weight: 600;
     text-decoration: none;
     white-space: nowrap;
+    transition: background 0.2s ease;
+  }
+
+  .header-cta:hover {
+    background: var(--brand-red-dark);
+    color: var(--brand-white);
   }
 
   .menu-toggle {
@@ -277,7 +325,36 @@ const navLinks = [
     border-radius: 999px;
   }
 
+  .mobile-nav-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    border: 0;
+    padding: 0;
+    background: rgba(42, 8, 16, 0.18);
+    backdrop-filter: blur(14px) saturate(1.2);
+    -webkit-backdrop-filter: blur(14px) saturate(1.2);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition:
+      opacity 0.25s ease,
+      visibility 0.25s ease;
+  }
+
+  .header-wrapper.is-menu-open .mobile-nav-backdrop {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .mobile-nav-backdrop[hidden] {
+    display: block;
+  }
+
   .mobile-nav {
+    position: relative;
+    z-index: 2;
     width: 100%;
     padding: 12px clamp(20px, 3vw, 32px) 16px;
     border-radius: 0;
@@ -348,8 +425,13 @@ const navLinks = [
     text-align: center;
     font-family: var(--ea-font-sans);
     font-weight: 600;
-    background: var(--brand-yellow) !important;
-    color: var(--brand-ink) !important;
+    background: var(--brand-red) !important;
+    color: var(--brand-white) !important;
+  }
+
+  .mobile-cta:hover {
+    background: var(--brand-red-dark) !important;
+    color: var(--brand-white) !important;
   }
 
   @media (min-width: 900px) {
@@ -382,5 +464,9 @@ const navLinks = [
 
   body:has(.ea-hero) main {
     padding-top: 0;
+  }
+
+  body.is-mobile-nav-open {
+    overflow: hidden;
   }
 </style>
