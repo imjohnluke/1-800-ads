@@ -1,0 +1,43 @@
+---
+export const prerender = false
+
+import PageLayout from '../layouts/PageLayout.astro'
+import CustomerSignIn from '../components/1800-ads/CustomerSignIn'
+import '../styles/customer-portal.css'
+
+const customer = Astro.locals.customer
+if (customer) {
+  return Astro.redirect('/dashboard/')
+}
+
+const sessionId = Astro.url.searchParams.get('session_id') ?? undefined
+const redirectTo = Astro.url.searchParams.get('next') ?? '/dashboard/'
+---
+
+<PageLayout
+  title="Customer Portal"
+  description="Sign in to your 1-800 Ads customer dashboard to track orders, briefs, and deliveries."
+  noIndex={true}
+>
+  <section class="ea-portal-page" data-nav-theme="cream">
+    <div class="ea-portal-shell">
+      <CustomerSignIn client:load initialSessionId={sessionId} redirectTo={redirectTo} />
+    </div>
+  </section>
+</PageLayout>
+
+<style is:global>
+  .ea-portal-page {
+    min-height: calc(100vh - var(--site-header-height, 64px));
+    padding: clamp(56px, 9vw, 104px) clamp(20px, 3vw, 28px) clamp(32px, 6vw, 72px);
+    background: var(--brand-cream);
+    font-family: var(--ea-font-sans);
+    color: var(--brand-ink);
+  }
+
+  .ea-portal-shell {
+    width: 100%;
+    max-width: 32rem;
+    margin: 0 auto;
+  }
+</style>

@@ -1,0 +1,33 @@
+---
+import BaseLayout from './BaseLayout.astro'
+import PricingCheckout from '../components/1800-ads/PricingCheckout'
+
+interface Props {
+  title: string
+  description?: string
+  noIndex?: boolean
+}
+
+const { title, description, noIndex = true } = Astro.props
+---
+
+<BaseLayout title={title} description={description} noIndex={noIndex}>
+  <slot name="head" slot="head" />
+  <div class="ea-dash-app-frame">
+    <slot />
+  </div>
+  <PricingCheckout client:load />
+</BaseLayout>
+
+<style is:global>
+  .ea-dash-app-frame {
+    min-height: 100vh;
+    background: var(--brand-cream);
+    font-family: var(--ea-font-sans);
+    color: var(--brand-ink);
+  }
+
+  body:has(.ea-dash-app-frame) > main {
+    padding-top: 0;
+  }
+</style>

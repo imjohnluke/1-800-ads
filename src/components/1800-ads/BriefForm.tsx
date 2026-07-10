@@ -1,4 +1,37 @@
-import { useMemo, useState, type FormEvent } from 'react'
+import { useEffect, useMemo, useState, type FormEvent } from 'react'
+
+function resolveSessionId(initial?: string) {
+  if (typeof window !== 'undefined') {
+    const fromUrl = new URLSearchParams(window.location.search).get('session_id')?.trim()
+    if (fromUrl) {
+      try {
+        sessionStorage.setItem('ea-checkout-session-id', fromUrl)
+      } catch {
+        /* ignore */
+      }
+      return fromUrl
+    }
+  }
+
+  if (initial) {
+    try {
+      sessionStorage.setItem('ea-checkout-session-id', initial)
+    } catch {
+      /* ignore */
+    }
+    return initial
+  }
+
+  try {
+    return sessionStorage.getItem('ea-checkout-session-id') || undefined
+  } catch {
+    return undefined
+  }
+}
+
+function isValidEmail(value: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())
+}
 
 type BriefData = {
   brandName: string
@@ -71,7 +104,9 @@ type Props = {
   sessionId?: string
 }
 
-export default function BriefForm({ sessionId }: Props) {
+export default function BriefForm({ sessionId: initialSessionId }: Props) {
+  const [sessionId] = useState(() => resolveSessionId(initialSessionId))
+  const [customerEmail, setCustomerEmail] = useState('')
   const [step, setStep] = useState(0)
   const [data, setData] = useState<BriefData>({
     brandName: '',
@@ -84,14 +119,25 @@ export default function BriefForm({ sessionId }: Props) {
   const [error, setError] = useState<string | null>(null)
   const [done, setDone] = useState(false)
 
+  useEffect(() => {
+    if (!sessionId) return
+
+    fetch('/api/sync-order/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sessionId }),
+    }).catch(() => {})
+  }, [sessionId])
+
   const current = STEPS[step]
   const isLast = step === STEPS.length - 1
 
   const canContinue = useMemo(() => {
     if (current.id === 'brandName') return data.brandName.trim().length > 0
     if (current.id === 'brandUrl') return isValidUrl(data.brandUrl.trim())
+    if (isLast && !sessionId) return isValidEmail(customerEmail)
     return true
-  }, [current.id, data.brandName, data.brandUrl])
+  }, [current.id, data.brandName, data.brandUrl, isLast, sessionId, customerEmail])
 
   function updateField(id: keyof BriefData, value: string) {
     setData((prev) => ({ ...prev, [id]: value }))
@@ -129,6 +175,7 @@ export default function BriefForm({ sessionId }: Props) {
       body.set('adStyles', data.adStyles.trim())
       body.set('promotions', data.promotions.trim())
       if (sessionId) body.set('sessionId', sessionId)
+      if (!sessionId && customerEmail) body.set('customerEmail', customerEmail.trim())
       files.forEach((file) => body.append('contentFolders', file))
 
       const response = await fetch('/api/submit-brief/', {
@@ -159,7 +206,13 @@ export default function BriefForm({ sessionId }: Props) {
           Our team has your brief for <strong>{data.brandName}</strong>. Expect your static ads in
           under 24 hours.
         </p>
-        <a className="ea-brief-btn ea-brief-btn-primary" href="/">
+        <a
+          className="ea-brief-btn ea-brief-btn-primary"
+          href={sessionId ? `/track/?session_id=${encodeURIComponent(sessionId)}` : '/track/'}
+        >
+          Track your order
+        </a>
+        <a className="ea-brief-btn ea-brief-btn-ghost" href="/">
           Back to 1-800 Ads
         </a>
       </div>
@@ -249,15 +302,34 @@ export default function BriefForm({ sessionId }: Props) {
         )}
 
         {current.type === 'textarea' && current.id === 'promotions' && (
-          <textarea
-            className="ea-brief-textarea"
-            name="promotions"
-            value={data.promotions}
-            placeholder={current.placeholder}
-            rows={5}
-            autoFocus
-            onInput={(e) => updateField('promotions', e.currentTarget.value)}
-          />
+          <>
+            <textarea
+              className="ea-brief-textarea"
+              name="promotions"
+              value={data.promotions}
+              placeholder={current.placeholder}
+              rows={5}
+              autoFocus
+              onInput={(e) => updateField('promotions', e.currentTarget.value)}
+            />
+            {!sessionId && (
+              <label className="ea-brief-email-field">
+                <span className="ea-brief-email-label">Email used at checkout</span>
+                <input
+                  className="ea-brief-input"
+                  type="email"
+                  name="customerEmail"
+                  value={customerEmail}
+                  placeholder="you@company.com"
+                  autoComplete="email"
+                  onInput={(e) => {
+                    setCustomerEmail(e.currentTarget.value)
+                    setError(null)
+                  }}
+                />
+              </label>
+            )}
+          </>
         )}
       </div>
 

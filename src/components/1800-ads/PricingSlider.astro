@@ -207,18 +207,7 @@ const initialIndex = getAdCountIndex(ADS_DEFAULT)
       updateUI(Number(slider.value))
     })
 
-    updateUI(initialIndex)
-
-    deliveryButtons.forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const schedule = btn.getAttribute('data-ea-delivery') as DeliverySchedule
-        if (!schedule) return
-        currentDelivery = schedule
-        updateDeliveryUI()
-      })
-    })
-
-    checkoutBtn?.addEventListener('click', () => {
+    const openCheckoutFlow = () => {
       try {
         const w = window as Window & { dataLayer?: Record<string, unknown>[] }
         const order = getOrderSummary(currentCount)
@@ -251,18 +240,24 @@ const initialIndex = getAdCountIndex(ADS_DEFAULT)
       }
 
       const openCheckout = () => {
-        document.dispatchEvent(
-          new CustomEvent('open-1800-checkout', { detail }),
-        )
+        document.dispatchEvent(new CustomEvent('open-1800-checkout', { detail }))
       }
 
       openCheckout()
+    }
 
-      if (!document.querySelector('.checkout-overlay')) {
-        window.setTimeout(openCheckout, 300)
-        window.setTimeout(openCheckout, 1000)
-      }
+    deliveryButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const schedule = btn.getAttribute('data-ea-delivery') as DeliverySchedule
+        if (!schedule) return
+        currentDelivery = schedule
+        updateDeliveryUI()
+      })
     })
+
+    checkoutBtn?.addEventListener('click', openCheckoutFlow)
+
+    updateUI(Number(slider.value))
   }
 
   initPricingSlider()

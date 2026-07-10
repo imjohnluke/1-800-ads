@@ -8,6 +8,26 @@ import { STRIPE_PRICE_IDS } from '../../data/stripe-price-ids'
 import { rateLimit, getClientIp } from '../../lib/rate-limit'
 import { getOrigin } from '../../lib/origin'
 
+async function resolveCheckoutDiscount(
+  code: string,
+): Promise<Stripe.Checkout.SessionCreateParams.Discount | null> {
+  const stripe = getStripe()
+  const trimmed = code.trim()
+  if (!trimmed) return null
+
+  const promos = await stripe.promotionCodes.list({
+    code: trimmed,
+    active: true,
+    limit: 1,
+  })
+
+  if (promos.data[0]) {
+    return { promotion_code: promos.data[0].id }
+  }
+
+  return { coupon: trimmed }
+}
+
 export const POST: APIRoute = async ({ request }) => {
   const ip = getClientIp(request)
   if (!rateLimit(ip, { limit: 10, windowMs: 60_000 })) {
@@ -26,7 +46,7 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     const body = await request.json()
-    const { adCount, coupon, fbclid, deliverySchedule } = body
+    const { adCount, coupon, fbclid, deliverySchedule, returnTo } = body
 
     if (adCount === undefined || adCount === null) {
       return new Response(JSON.stringify({ error: 'Missing adCount' }), {
@@ -61,9 +81,11 @@ export const POST: APIRoute = async ({ request }) => {
         : 'one-time'
 
     const includesAudit = count >= 20
+    const origin = getOrigin(request)
+    const cancelPath =
+      typeof returnTo === 'string' && returnTo.startsWith('/dashboard') ? returnTo : '/#order'
 
     const sessionParams: Stripe.Checkout.SessionCreateParams = {
-      ui_mode: 'embedded',
       line_items: [
         {
           price: priceId,
@@ -71,7 +93,8 @@ export const POST: APIRoute = async ({ request }) => {
         },
       ],
       mode: 'payment',
-      return_url: `${getOrigin(request)}/brief/?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${origin}/brief/?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${origin}${cancelPath}`,
       metadata: {
         product: '1800-ads',
         adCount: String(order.adCount),
@@ -84,12 +107,24 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     if (coupon && typeof coupon === 'string') {
-      sessionParams.discounts = [{ coupon }]
+      const discount = await resolveCheckoutDiscount(coupon)
+      if (discount) {
+        sessionParams.discounts = [discount]
+      }
+    } else {
+      sessionParams.allow_promotion_codes = true
     }
 
     const session = await getStripe().checkout.sessions.create(sessionParams)
 
-    return new Response(JSON.stringify({ clientSecret: session.client_secret }), {
+    if (!session.url) {
+      return new Response(JSON.stringify({ error: 'Failed to start checkout.' }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+
+    return new Response(JSON.stringify({ url: session.url }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     })

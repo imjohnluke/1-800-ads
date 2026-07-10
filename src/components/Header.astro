@@ -1,9 +1,10 @@
 ---
 const navLinks = [
-  { label: 'How it works', href: '#offer' },
-  { label: 'Examples', href: '#work' },
-  { label: 'Pricing', href: '#order' },
-  { label: 'FAQ', href: '#faq' },
+  { label: 'How it works', href: '/#offer' },
+  { label: 'Examples', href: '/#work' },
+  { label: 'Pricing', href: '/#order' },
+  { label: 'Dashboard', href: '/dashboard/' },
+  { label: 'FAQ', href: '/#faq' },
 ]
 ---
 
@@ -23,7 +24,7 @@ const navLinks = [
       {navLinks.map((item) => <a href={item.href}>{item.label}</a>)}
     </nav>
 
-    <a class="header-cta" href="#order">Order ads</a>
+    <a class="header-cta" href="/#order">Order ads</a>
 
     <button
       type="button"
@@ -40,7 +41,7 @@ const navLinks = [
 
   <nav class="mobile-nav" id="mobile-nav" aria-label="Mobile navigation" hidden>
     {navLinks.map((item) => <a href={item.href}>{item.label}</a>)}
-    <a class="mobile-cta" href="#order">Order ads</a>
+    <a class="mobile-cta" href="/#order">Order ads</a>
   </nav>
 </div>
 
