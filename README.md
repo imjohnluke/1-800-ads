@@ -58,12 +58,22 @@ Uploads store filenames and sizes in **Uploads** for now. Notion needs public fi
 
 ## Deploy
 
+See **[DEPLOY.md](./DEPLOY.md)** for the full production checklist (Railway, env vars, DNS).
+
+Quick version:
+
 ```bash
 npm run build
 npm start
 ```
 
-Set the same environment variables in your hosting provider.
+Set these in your host’s environment panel (Railway → **Variables**):
+
+- `PUBLIC_SITE_URL`
+- `STRIPE_SECRET_KEY`
+- `PUBLIC_STRIPE_PUBLISHABLE_KEY`
+- `NOTION_API_KEY`
+- `NOTION_BRIEF_DATABASE_ID`
 
 ## Branding
 

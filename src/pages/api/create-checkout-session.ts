@@ -1,7 +1,7 @@
 export const prerender = false
 
 import type { APIRoute } from 'astro'
-import { stripe } from '../../lib/stripe'
+import { getStripe } from '../../lib/stripe'
 import { getOrderSummary, clampAdCount, type DeliverySchedule } from '../../data/1800-ads-pricing'
 import { STRIPE_PRICE_IDS } from '../../data/stripe-price-ids'
 import { rateLimit, getClientIp } from '../../lib/rate-limit'
@@ -17,6 +17,13 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   try {
+    if (!import.meta.env.STRIPE_SECRET_KEY) {
+      return new Response(JSON.stringify({ error: 'Checkout is not configured on the server.' }), {
+        status: 503,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+
     const body = await request.json()
     const { adCount, coupon, fbclid, deliverySchedule } = body
 
@@ -54,7 +61,7 @@ export const POST: APIRoute = async ({ request }) => {
 
     const includesAudit = count >= 20
 
-    const sessionParams: Parameters<typeof stripe.checkout.sessions.create>[0] = {
+    const sessionParams: Parameters<ReturnType<typeof getStripe>['checkout']['sessions']['create']>[0] = {
       ui_mode: 'embedded',
       line_items: [
         {
@@ -79,7 +86,7 @@ export const POST: APIRoute = async ({ request }) => {
       sessionParams.discounts = [{ coupon }]
     }
 
-    const session = await stripe.checkout.sessions.create(sessionParams)
+    const session = await getStripe().checkout.sessions.create(sessionParams)
 
     return new Response(JSON.stringify({ clientSecret: session.client_secret }), {
       status: 200,

@@ -12,12 +12,18 @@ function allowedHosts(): string[] {
   return [...hosts]
 }
 
+function isAllowedHost(hostname: string): boolean {
+  if (allowedHosts().includes(hostname)) return true
+  if (hostname.endsWith('.up.railway.app')) return true
+  return false
+}
+
 export function getOrigin(request: Request): string {
   const forwarded = request.headers.get('x-forwarded-host') || request.headers.get('host')
 
   if (forwarded) {
     const hostname = forwarded.split(':')[0]
-    if (allowedHosts().includes(hostname)) {
+    if (isAllowedHost(hostname)) {
       const proto = request.headers.get('x-forwarded-proto') || 'https'
       return `${proto}://${forwarded}`
     }

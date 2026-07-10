@@ -1,16 +1,15 @@
 import { useState, useCallback, useEffect } from 'react'
-import { loadStripe } from '@stripe/stripe-js'
+import { loadStripe, type Stripe } from '@stripe/stripe-js'
 import { EmbeddedCheckoutProvider, EmbeddedCheckout } from '@stripe/react-stripe-js'
 import { formatUsd, getOrderSummary, getDeliveryScheduleLabel, type DeliverySchedule } from '../../data/1800-ads-pricing'
-
-const stripePublishableKey = import.meta.env.PUBLIC_STRIPE_PUBLISHABLE_KEY
-const stripePromise = stripePublishableKey ? loadStripe(stripePublishableKey) : null
 
 export default function PricingCheckout() {
   const [checkoutOpen, setCheckoutOpen] = useState(false)
   const [checkoutError, setCheckoutError] = useState<string | null>(null)
   const [adCount, setAdCount] = useState(10)
   const [deliverySchedule, setDeliverySchedule] = useState<DeliverySchedule>('one-time')
+  const [stripePromise, setStripePromise] = useState<Promise<Stripe | null> | null>(null)
+  const [stripeLoading, setStripeLoading] = useState(true)
 
   const order = getOrderSummary(adCount)
   const deliveryLabel = getDeliveryScheduleLabel(deliverySchedule)
@@ -21,11 +20,49 @@ export default function PricingCheckout() {
   }, [])
 
   useEffect(() => {
+    let cancelled = false
+
+    async function loadPublishableKey() {
+      try {
+        const res = await fetch('/api/stripe-config/')
+        const data = (await res.json()) as { publishableKey?: string; error?: string }
+
+        if (!res.ok || !data.publishableKey) {
+          throw new Error(data.error || 'Stripe is not configured.')
+        }
+
+        if (!cancelled) {
+          setStripePromise(loadStripe(data.publishableKey))
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setCheckoutError(
+            err instanceof Error ? err.message : 'Checkout is unavailable right now.',
+          )
+        }
+      } finally {
+        if (!cancelled) setStripeLoading(false)
+      }
+    }
+
+    loadPublishableKey()
     document.dispatchEvent(new Event('1800-checkout-ready'))
 
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  useEffect(() => {
     const handler = (e: Event) => {
-      if (!stripePublishableKey) {
-        setCheckoutError('Checkout is not configured. Missing Stripe publishable key.')
+      if (stripeLoading) {
+        setCheckoutError('Checkout is still loading. Try again in a moment.')
+        setCheckoutOpen(true)
+        return
+      }
+
+      if (!stripePromise) {
+        setCheckoutError(checkoutError || 'Checkout is not configured. Missing Stripe publishable key.')
         setCheckoutOpen(true)
         return
       }
@@ -38,7 +75,7 @@ export default function PricingCheckout() {
     }
     document.addEventListener('open-1800-checkout', handler)
     return () => document.removeEventListener('open-1800-checkout', handler)
-  }, [])
+  }, [stripeLoading, stripePromise, checkoutError])
 
   useEffect(() => {
     if (!checkoutOpen) return
@@ -54,8 +91,8 @@ export default function PricingCheckout() {
   }, [checkoutOpen, closeCheckout])
 
   const fetchClientSecret = useCallback(async () => {
-    if (!stripePublishableKey) {
-      throw new Error('Missing Stripe publishable key')
+    if (!stripePromise) {
+      throw new Error('Stripe is not configured')
     }
 
     const coupon = new URLSearchParams(window.location.search).get('coupon') || undefined
@@ -79,7 +116,7 @@ export default function PricingCheckout() {
     const data = await res.json()
     if (!res.ok) throw new Error(data.error || 'Failed to create checkout session')
     return data.clientSecret
-  }, [order.adCount, deliverySchedule])
+  }, [order.adCount, deliverySchedule, stripePromise])
 
   if (!checkoutOpen) return null
 
