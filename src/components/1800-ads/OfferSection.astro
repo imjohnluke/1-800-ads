@@ -2,13 +2,13 @@
 import { PROCESS_STEPS } from '../../data/1800-ads-offer'
 ---
 
-<section class="ea-offer-section" id="offer" aria-labelledby="ea-offer-heading">
+<section class="ea-offer-section ea-section-light" id="offer" data-nav-theme="cream" aria-labelledby="ea-offer-heading">
   <div class="ea-offer-wrap">
     <div class="ea-process-track" data-ea-process-track>
       <div class="ea-process-pin" data-ea-process-pin>
         <div class="ea-offer-header" data-ea-offer-header>
           <h2 id="ea-offer-heading" class="ea-offer-title">
-            New static ads <span class="ea-offer-title-grad">concepted</span>, <span class="ea-offer-title-grad">designed</span> and <span class="ea-offer-title-grad">delivered</span> in days
+            New static ads concepted, designed and delivered in days
           </h2>
         <p class="ea-offer-intro">
           We use performance-driven systems to produce fresh angles to test and bring new energy into your ad account.
@@ -253,26 +253,17 @@ import { PROCESS_STEPS } from '../../data/1800-ads-offer'
 
 <style>
   .ea-offer-section {
-    --ea-ink: #11110f;
-    --ea-muted: #6b6677;
-    --ea-accent: #ff6b2e;
-    --ea-grad: linear-gradient(90deg, #ff8a3d 0%, #ff6b2e 22%, #e84b6f 55%, #9c42e0 80%, #7b3fe4 100%);
-    --ea-card-bg: #f0f0f3;
-    --ea-card-border: #e0e0e6;
     --ea-nav-h: 72px;
     --ea-shell-pad-top: 70px;
-    --ea-font-display: 'Inter Tight', 'Plus Jakarta Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    --ea-font-sans: 'Inter', 'DM Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    --ea-font-mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;
     --ea-pad: clamp(20px, 3vw, 28px);
     --ea-maxw: 1232px;
 
     padding: clamp(36px, 5vw, 56px) 0 clamp(56px, 7vw, 88px);
-    background: #fff;
+    background: var(--brand-cream);
     position: relative;
     z-index: 2;
     font-family: var(--ea-font-sans);
-    color: var(--ea-ink);
+    color: var(--brand-ink);
   }
 
   .ea-offer-wrap {
@@ -293,7 +284,7 @@ import { PROCESS_STEPS } from '../../data/1800-ads-offer'
     flex-direction: column;
     padding-top: var(--ea-shell-pad-top);
     padding-bottom: 0;
-    background: #fff;
+    background: var(--brand-cream);
     z-index: 5;
     overflow: visible;
   }
@@ -307,25 +298,18 @@ import { PROCESS_STEPS } from '../../data/1800-ads-offer'
     display: flex;
     flex-direction: column;
     align-items: center;
-    background: #fff;
+    background: var(--brand-cream);
   }
 
   .ea-offer-title {
     margin: 0;
     font-family: var(--ea-font-display);
-    font-weight: 800;
+    font-weight: 400;
     font-size: clamp(36px, 5.2vw, 60px);
     line-height: 0.98;
     letter-spacing: -0.05em;
     text-wrap: balance;
-  }
-
-  .ea-offer-title-grad {
-    background: var(--ea-grad);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: transparent;
+    color: var(--brand-ink);
   }
 
   .ea-offer-intro {
@@ -421,7 +405,7 @@ import { PROCESS_STEPS } from '../../data/1800-ads-offer'
 
   .ea-process-points svg {
     flex-shrink: 0;
-    color: #7b3fe4;
+    color: var(--brand-red);
   }
 
   .ea-process-visual {
@@ -436,7 +420,7 @@ import { PROCESS_STEPS } from '../../data/1800-ads-offer'
 
   .ea-visual-brief {
     width: min(100%, 420px);
-    background: #fff;
+    background: var(--brand-cream);
     border: 1px solid #e8e2f2;
     border-radius: 16px;
     box-shadow: 0 12px 32px rgba(17, 17, 15, 0.06);
@@ -475,7 +459,7 @@ import { PROCESS_STEPS } from '../../data/1800-ads-offer'
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: #e2dbf0;
+    background: var(--brand-line);
   }
 
   .ea-visual-brief-bar span:first-child {
@@ -483,11 +467,11 @@ import { PROCESS_STEPS } from '../../data/1800-ads-offer'
   }
 
   .ea-visual-brief-bar span:nth-child(2) {
-    background: #e84b6f;
+    background: var(--brand-red-dark);
   }
 
   .ea-visual-brief-bar span:nth-child(3) {
-    background: #7b3fe4;
+    background: var(--brand-red);
   }
 
   .ea-visual-brief-body {
@@ -529,9 +513,9 @@ import { PROCESS_STEPS } from '../../data/1800-ads-offer'
     font-weight: 500;
     padding: 5px 10px;
     border-radius: 999px;
-    background: rgba(123, 63, 228, 0.08);
-    border: 1px solid rgba(123, 63, 228, 0.12);
-    color: #7b3fe4;
+    background: rgba(200, 16, 46, 0.08);
+    border: 1px solid rgba(200, 16, 46, 0.18);
+    color: var(--brand-red);
   }
 
   .ea-visual-ads {
@@ -574,7 +558,7 @@ import { PROCESS_STEPS } from '../../data/1800-ads-offer'
 
   .ea-visual-delivery {
     width: min(100%, 400px);
-    background: #fff;
+    background: var(--brand-cream);
     border: 1px solid #e8e2f2;
     border-radius: 16px;
     padding: 18px;
@@ -620,7 +604,7 @@ import { PROCESS_STEPS } from '../../data/1800-ads-offer'
     width: 14px;
     height: 16px;
     border-radius: 2px;
-    background: linear-gradient(180deg, #ff8a3d, #7b3fe4);
+    background: var(--brand-red);
     flex-shrink: 0;
   }
 
@@ -630,7 +614,7 @@ import { PROCESS_STEPS } from '../../data/1800-ads-offer'
     font-size: 11px;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: #7b3fe4;
+    color: var(--brand-red);
     text-align: center;
   }
 

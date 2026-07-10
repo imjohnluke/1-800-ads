@@ -14,31 +14,28 @@ import { webPageSchema } from '../lib/schema'
 import { SITE_URL } from '../lib/site'
 
 const tickerCol1 = [
+  '/images/1-800-ads/mad-coffee-faster.png',
+  '/images/1-800-ads/inessa-wellness-bundle.png',
+  '/images/1-800-ads/mad-coffee-compostable.png',
   '/images/1-800-ads/ad-1.png',
-  '/images/1-800-ads/ad-2.png',
   '/images/1-800-ads/ad-3.png',
-  '/images/1-800-ads/ad-4.png',
   '/images/1-800-ads/ad-5.png',
 ]
 
 const tickerCol2 = [
+  '/images/1-800-ads/inessa-wellness-bundle.png',
+  '/images/1-800-ads/mad-coffee-compostable.png',
+  '/images/1-800-ads/mad-coffee-faster.png',
   '/images/1-800-ads/ad-6.png',
-  '/images/1-800-ads/ad-3.png',
   '/images/1-800-ads/ad-2.png',
-  '/images/1-800-ads/ad-5.png',
   '/images/1-800-ads/ad-4.png',
 ]
 
 const brandLogos = [
-  { src: '/images/managed-services/Huel.png', alt: 'Huel' },
-  { src: '/images/managed-services/MUDWTR.png', alt: 'MUDWTR' },
-  { src: '/images/managed-services/Brez logo 1.png', alt: 'Brez' },
-  { src: '/images/managed-services/danone.png', alt: 'Danone' },
-  { src: '/images/managed-services/FERMAT 1.png', alt: 'FERMAT' },
-  { src: '/images/managed-services/Obvi.png', alt: 'Obvi' },
-  { src: '/images/managed-services/SavageXFenty.png', alt: 'Savage X Fenty' },
-  { src: '/images/managed-services/Magic Mind 1.png', alt: 'Magic Mind' },
-  { src: '/images/managed-services/Black Rifle Coffee Company.png', alt: 'Black Rifle Coffee' },
+  { src: '/images/trusted-by/miss-grass.png', alt: 'Miss Grass' },
+  { src: '/images/trusted-by/mad-coffee.png', alt: 'MAD Coffee' },
+  { src: '/images/trusted-by/portal.png', alt: 'Portal' },
+  { src: '/images/trusted-by/inessa.png', alt: 'Inessa' },
 ]
 
 const schemas = [
@@ -57,16 +54,10 @@ const schemas = [
 >
   <Fragment slot="head">
     {schemas.map((s) => <script type="application/ld+json" set:html={JSON.stringify(s)} />)}
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,400;0,500;0,600;0,700;0,800;1,700&family=JetBrains+Mono:wght@400;500&display=swap"
-      rel="stylesheet"
-    />
   </Fragment>
 
   <div class="ea-page">
-    <section class="ea-hero" aria-labelledby="eighteen-hero-heading">
+    <section class="ea-hero" data-nav-theme="red" aria-labelledby="eighteen-hero-heading">
       <div class="ea-wrap ea-hero-text">
         <div class="ea-hero-copy">
           <h1 id="eighteen-hero-heading" class="ea-h-xl">
@@ -76,7 +67,7 @@ const schemas = [
           <div class="ea-hero-right">
             <p class="ea-body-lg">
               Our one-time purchase option for brands that want fresh static ads without a subscription.
-              We concept, design, and deliver — <b style="color: var(--ea-ink);">pay per order, ready in under 24 hours.</b>
+              We concept, design, and deliver — <b>pay per order, ready in under 24 hours.</b>
             </p>
           </div>
           <div class="ea-hero-ctas">
@@ -124,30 +115,17 @@ const schemas = [
       </div>
     </section>
 
-    <div class="ea-logobar">
+    <div class="ea-logobar" data-nav-theme="cream">
       <div class="ea-wrap">
-        <div class="ea-logobar-label">Trusted by 25,000+ brands</div>
-        <div class="ea-logo-mask">
-          <div class="ea-logo-track">
-            <div class="ea-logo-row">
-              {
-                brandLogos.map((logo) => (
-                  <div class="ea-logo">
-                    <img src={logo.src} alt={logo.alt} />
-                  </div>
-                ))
-              }
-            </div>
-            <div class="ea-logo-row" aria-hidden="true">
-              {
-                brandLogos.map((logo) => (
-                  <div class="ea-logo">
-                    <img src={logo.src} alt="" />
-                  </div>
-                ))
-              }
-            </div>
-          </div>
+        <div class="ea-logobar-label">Trusted by brands</div>
+        <div class="ea-logo-row">
+          {
+            brandLogos.map((logo) => (
+              <div class="ea-logo">
+                <img src={logo.src} alt={logo.alt} loading="lazy" decoding="async" />
+              </div>
+            ))
+          }
         </div>
       </div>
     </div>
@@ -161,7 +139,7 @@ const schemas = [
 
   <WorkGallery />
 
-  <section class="ea-page ea-pricing-section" id="order" aria-labelledby="ea-pricing-heading">
+  <section class="ea-page ea-pricing-section" id="order" data-nav-theme="cream" aria-labelledby="ea-pricing-heading">
     <div class="ea-wrap ea-pricing-split">
       <div class="ea-pricing-copy ea-hero-copy">
         <span class="ea-eyebrow">Pricing</span>
@@ -202,7 +180,7 @@ const schemas = [
 
   <TestimonialsSection />
 
-  <section class="ea-page ea-final-cta" id="ea-cta" aria-labelledby="ea-cta-heading">
+  <section class="ea-page ea-final-cta" id="ea-cta" data-nav-theme="cream" aria-labelledby="ea-cta-heading">
     <div class="ea-wrap">
       <div class="ea-cta-card">
         <span class="ea-eyebrow ea-eyebrow-light">Get started</span>
@@ -220,7 +198,7 @@ const schemas = [
             height="16"
             viewBox="0 0 24 24"
             fill="none"
-            stroke="#fff"
+            stroke="currentColor"
             stroke-width="2.5"
             stroke-linecap="round"
             stroke-linejoin="round"
@@ -237,17 +215,6 @@ const schemas = [
 
 <style>
   .ea-page {
-    --ea-bg: #ffffff;
-    --ea-ink: #11110f;
-    --ea-muted: #6b6677;
-    --ea-line: #e2dbf0;
-    --ea-surface: #f5f0ff;
-    --ea-dark: #11110f;
-    --ea-accent: #ff6b2e;
-    --ea-grad: linear-gradient(90deg, #ff8a3d 0%, #ff6b2e 22%, #e84b6f 55%, #9c42e0 80%, #7b3fe4 100%);
-    --ea-font-display: 'Inter Tight', 'Plus Jakarta Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    --ea-font-sans: 'Inter', 'DM Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    --ea-font-mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;
     --ea-radius-lg: 18px;
     --ea-pad: clamp(20px, 3vw, 28px);
     --ea-maxw: 1232px;
@@ -255,7 +222,6 @@ const schemas = [
     font-family: var(--ea-font-sans);
     color: var(--ea-ink);
     background: var(--ea-bg);
-    -webkit-font-smoothing: antialiased;
   }
 
   .ea-page *,
@@ -317,11 +283,10 @@ const schemas = [
 
   .ea-h-xl {
     font-family: var(--ea-font-display);
-    font-weight: 800;
+    font-weight: 400;
     font-size: clamp(42px, 5.6vw, 68px);
-    line-height: 0.93;
-    letter-spacing: -0.036em;
-    word-spacing: 0.045em;
+    line-height: 0.98;
+    letter-spacing: -0.01em;
     margin: 0;
     max-width: 600px;
     text-wrap: balance;
@@ -329,11 +294,8 @@ const schemas = [
   }
 
   .ea-grad-text {
-    background: var(--ea-grad);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: transparent;
+    color: var(--brand-red);
+    -webkit-text-fill-color: var(--brand-red);
   }
 
   .ea-body-lg {
@@ -345,6 +307,62 @@ const schemas = [
     max-width: 42rem;
   }
 
+  .ea-hero {
+    padding: calc(clamp(60px, 8vw, 100px) + var(--site-header-height, 64px)) 0
+      clamp(52px, 7vw, 80px);
+    background: var(--brand-red);
+    color: var(--brand-white);
+  }
+
+  .ea-hero .ea-h-xl {
+    color: var(--brand-white);
+  }
+
+  .ea-hero .ea-grad-text {
+    color: var(--brand-yellow);
+    -webkit-text-fill-color: var(--brand-yellow);
+  }
+
+  .ea-hero .ea-body-lg {
+    color: var(--brand-muted-on-red);
+  }
+
+  .ea-hero .ea-body-lg b {
+    color: var(--brand-white);
+    font-weight: 700;
+  }
+
+  .ea-hero .ea-btn-soft {
+    background: var(--brand-white);
+    color: var(--brand-ink);
+    -webkit-text-fill-color: var(--brand-ink);
+  }
+
+  .ea-hero .ea-btn-soft:hover {
+    background: var(--brand-white);
+    color: var(--brand-ink);
+    -webkit-text-fill-color: var(--brand-ink);
+  }
+
+  .ea-hero .ea-btn-outline {
+    border: 2px solid rgba(255, 255, 255, 0.65);
+    color: var(--brand-white);
+    -webkit-text-fill-color: var(--brand-white);
+  }
+
+  .ea-hero .ea-btn-outline:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: var(--brand-white);
+  }
+
+  .ea-hero .ea-hero-meta {
+    color: rgba(255, 255, 255, 0.72);
+  }
+
+  .ea-hero .ea-hero-visual::before {
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, transparent 70%);
+  }
+
   .ea-btn {
     display: inline-flex;
     align-items: center;
@@ -352,8 +370,8 @@ const schemas = [
     min-height: 46px;
     padding: 12px 22px;
     border-radius: 999px;
-    font-family: var(--ea-font-display);
-    font-weight: 700;
+    font-family: var(--ea-font-sans);
+    font-weight: 600;
     font-size: 15px;
     letter-spacing: -0.005em;
     transition:
@@ -370,45 +388,51 @@ const schemas = [
 
   .ea-btn-soft {
     border: 0;
-    background: var(--ea-surface);
-    color: var(--ea-ink);
-    -webkit-text-fill-color: var(--ea-ink);
+    background: var(--brand-yellow);
+    color: var(--brand-ink);
+    -webkit-text-fill-color: var(--brand-ink);
   }
 
   .ea-btn-soft:hover {
-    background: #ece5fa;
+    background: var(--brand-yellow);
+    color: var(--brand-ink);
+    -webkit-text-fill-color: var(--brand-ink);
+    transform: none;
   }
 
   .ea-btn-outline {
-    border: 1.5px solid #d8c9f5;
+    border: 2px solid rgba(42, 8, 16, 0.28);
     background: transparent;
-    color: var(--ea-ink);
-    -webkit-text-fill-color: var(--ea-ink);
+    color: var(--brand-ink);
+    -webkit-text-fill-color: var(--brand-ink);
   }
 
   .ea-btn-outline:hover {
-    background: rgba(123, 63, 228, 0.06);
-    border-color: #c9b8f0;
+    background: rgba(42, 8, 16, 0.05);
+    border-color: rgba(42, 8, 16, 0.45);
   }
 
   .ea-btn-grad {
-    background: var(--ea-grad);
-    color: #fff;
-    -webkit-text-fill-color: #fff;
-    box-shadow: 0 8px 24px -8px rgba(232, 75, 111, 0.4);
+    background: var(--brand-yellow);
+    color: var(--brand-ink);
+    -webkit-text-fill-color: var(--brand-ink);
+    box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.35);
   }
 
   .ea-btn-grad:hover {
-    filter: brightness(1.04);
+    filter: brightness(1.05);
+  }
+
+  .ea-btn-soft .ea-arrow,
+  .ea-btn-soft .ea-arrow path {
+    color: var(--brand-ink);
+    stroke: var(--brand-ink);
   }
 
   .ea-arrow {
     display: inline-block;
     vertical-align: middle;
-  }
-
-  .ea-hero {
-    padding: clamp(60px, 8vw, 100px) 0 clamp(52px, 7vw, 80px);
+    flex-shrink: 0;
   }
 
   .ea-hero-text {
@@ -455,7 +479,11 @@ const schemas = [
     font-size: 10px;
     letter-spacing: 0.07em;
     text-transform: uppercase;
-    color: #8a8398;
+  }
+
+  .ea-pricing-copy .ea-hero-meta,
+  .ea-pricing-section .ea-hero-meta {
+    color: var(--brand-muted);
   }
 
   .ea-dot {
@@ -487,7 +515,6 @@ const schemas = [
     content: '';
     position: absolute;
     inset: 10% 8%;
-    background: radial-gradient(circle, rgba(103, 59, 236, 0.1) 0%, transparent 70%);
     pointer-events: none;
   }
 
@@ -583,7 +610,9 @@ const schemas = [
 
   .ea-logobar {
     padding: 22px 0;
-    background: var(--ea-bg);
+    background: var(--brand-cream);
+    border-top: 1px solid rgba(42, 8, 16, 0.08);
+    border-bottom: 1px solid rgba(42, 8, 16, 0.08);
   }
 
   .ea-logobar-label {
@@ -591,29 +620,17 @@ const schemas = [
     font-size: 10px;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--ea-muted);
+    color: var(--brand-muted);
     text-align: center;
     margin-bottom: 16px;
   }
 
-  .ea-logo-mask {
-    overflow: hidden;
-    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
-    -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
-  }
-
-  .ea-logo-track {
-    display: flex;
-    gap: 56px;
-    align-items: center;
-    width: max-content;
-    animation: ea-marquee 40s linear infinite;
-  }
-
   .ea-logo-row {
     display: flex;
-    gap: 56px;
+    gap: clamp(28px, 5vw, 56px);
     align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
   }
 
   .ea-logo {
@@ -627,16 +644,31 @@ const schemas = [
     width: auto;
     max-width: none;
     object-fit: contain;
-    opacity: 0.62;
-    filter: grayscale(0.2);
+    opacity: 0.82;
+    filter: invert(1);
+    mix-blend-mode: multiply;
   }
 
-  @keyframes ea-marquee {
-    0% {
-      transform: translateX(0);
+  @media (max-width: 540px) {
+    .ea-logobar {
+      padding: 16px 0;
     }
-    100% {
-      transform: translateX(-50%);
+
+    .ea-logobar-label {
+      margin-bottom: 10px;
+    }
+
+    .ea-logo-row {
+      gap: 12px 18px;
+    }
+
+    .ea-logo {
+      height: 22px;
+      max-width: 38vw;
+    }
+
+    .ea-logo img {
+      max-width: 100%;
     }
   }
 
@@ -685,29 +717,13 @@ const schemas = [
 
   .ea-pricing-section {
     padding: clamp(60px, 8vw, 96px) 0;
-    background: radial-gradient(ellipse at 50% 30%, rgba(140, 50, 210, 0.45) 0%, transparent 65%), #1a0830;
+    background: var(--brand-cream);
   }
 
   @media (min-width: 901px) {
     .ea-pricing-section {
       padding: clamp(100px, 12vw, 148px) 0;
     }
-  }
-
-  .ea-pricing-section .ea-h-xl {
-    color: #fff;
-  }
-
-  .ea-pricing-section .ea-body-lg {
-    color: rgba(255, 255, 255, 0.55);
-  }
-
-  .ea-pricing-section .ea-pricing-benefits li {
-    color: rgba(255, 255, 255, 0.62);
-  }
-
-  .ea-pricing-section .ea-pricing-benefits svg {
-    color: #c9a8ff;
   }
 
   .ea-wrap.ea-pricing-split {
@@ -742,7 +758,7 @@ const schemas = [
       justify-self: center;
       text-align: center;
       margin-inline: auto;
-      margin-top: -1.5rem;
+      margin-top: 0.5rem;
       margin-bottom: 0;
     }
 
@@ -765,7 +781,7 @@ const schemas = [
   }
 
   .ea-pricing-title {
-    margin-top: 6px;
+    margin-top: 14px;
     font-size: clamp(36px, 4.8vw, 56px);
     max-width: 11ch;
   }
@@ -803,7 +819,7 @@ const schemas = [
   .ea-pricing-benefits svg {
     flex-shrink: 0;
     margin-top: 0.15rem;
-    color: #673bec;
+    color: var(--brand-red);
   }
 
   .ea-pricing-card-col {
@@ -819,7 +835,8 @@ const schemas = [
   }
 
   .ea-cta-card {
-    background: radial-gradient(ellipse at 50% 30%, rgba(140, 50, 210, 0.45) 0%, transparent 65%), #1a0830;
+    background: var(--brand-red);
+    border: 2px solid rgba(255, 255, 255, 0.14);
     border-radius: var(--ea-radius-lg);
     padding: clamp(52px, 8vw, 108px) clamp(32px, 6vw, 80px);
     text-align: center;
@@ -829,18 +846,38 @@ const schemas = [
     gap: 22px;
   }
 
+  .ea-cta-card .ea-eyebrow-light {
+    color: var(--brand-yellow);
+  }
+
   .ea-cta-title {
-    color: #fff;
+    color: var(--brand-white);
     max-width: none;
     line-height: 1.05;
+  }
+
+  .ea-cta-card .ea-grad-text {
+    color: var(--brand-yellow);
+    -webkit-text-fill-color: var(--brand-yellow);
   }
 
   .ea-cta-sub {
     margin: 0;
     font-size: clamp(15px, 1.3vw, 17px);
-    color: rgba(255, 255, 255, 0.55);
+    color: rgba(255, 255, 255, 0.82);
     line-height: 1.55;
     max-width: 34rem;
+  }
+
+  .ea-cta-card .ea-btn-grad {
+    background: var(--brand-yellow);
+    color: var(--brand-ink);
+    -webkit-text-fill-color: var(--brand-ink);
+    box-shadow: 0 8px 24px -8px rgba(42, 8, 16, 0.35);
+  }
+
+  .ea-cta-card .ea-btn-grad:hover {
+    filter: brightness(1.06);
   }
 
   .ea-cta-btn {

@@ -1,9 +1,7 @@
 ---
 ---
 
-<section
-  class="ea-scroll-statement"
-  data-ea-scroll-statement
+<section class="ea-scroll-statement" data-nav-theme="cream" data-ea-scroll-statement
   aria-label="Great ad ideas are priceless. We never run out of them."
 >
   <div class="ea-scroll-statement-pin">
@@ -97,16 +95,13 @@
 
 <style>
   .ea-scroll-statement {
-    --ea-ink: #11110f;
-    --ea-grad: linear-gradient(90deg, #ff8a3d 0%, #ff6b2e 22%, #e84b6f 55%, #9c42e0 80%, #7b3fe4 100%);
-    --ea-font-display: 'Inter Tight', 'Plus Jakarta Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
     --ea-pad: clamp(20px, 3vw, 28px);
 
     height: 260vh;
     margin-bottom: -35vh;
     position: relative;
     z-index: 1;
-    background: #fff;
+    background: var(--brand-cream);
   }
 
   .ea-scroll-statement-pin {
@@ -117,6 +112,7 @@
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    background: var(--brand-cream);
   }
 
   .ea-scroll-statement-stage {
@@ -141,16 +137,13 @@
     letter-spacing: -0.04em;
     text-align: center;
     text-wrap: balance;
-    color: var(--ea-ink);
+    color: var(--brand-ink);
     will-change: opacity, transform;
   }
 
   .ea-scroll-line-2 {
-    background: var(--ea-grad);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: transparent;
+    color: var(--brand-red);
+    -webkit-text-fill-color: var(--brand-red);
   }
 
   .ea-scroll-br-mobile {

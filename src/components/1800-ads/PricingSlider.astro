@@ -3,15 +3,15 @@ import {
   ADS_MIN,
   ADS_MAX,
   ADS_DEFAULT,
+  ADS_OPTIONS,
   DELIVERY_SCHEDULES,
   getOrderSummary,
+  getAdCountIndex,
   formatUsd,
-  qualifiesForRecurringDelivery,
 } from '../../data/1800-ads-pricing'
-import PricingCheckout from './PricingCheckout'
 
 const initial = getOrderSummary(ADS_DEFAULT)
-const showRecurringOptions = qualifiesForRecurringDelivery(initial.adCount)
+const initialIndex = getAdCountIndex(ADS_DEFAULT)
 ---
 
 <div class="ea-pricing-card" data-ea-pricing-root>
@@ -25,15 +25,21 @@ const showRecurringOptions = qualifiesForRecurringDelivery(initial.adCount)
       id="ea-ads-slider"
       class="ea-pricing-slider"
       type="range"
-      min={ADS_MIN}
-      max={ADS_MAX}
+      min={0}
+      max={ADS_OPTIONS.length - 1}
       step={1}
-      value={initial.adCount}
+      value={initialIndex}
       aria-valuemin={ADS_MIN}
       aria-valuemax={ADS_MAX}
       aria-valuenow={initial.adCount}
+      aria-valuetext={`${initial.adCount} static ads, ${formatUsd(initial.total)} total`}
       data-ea-slider
     />
+    <div class="ea-pricing-slider-ticks" aria-hidden="true">
+      {ADS_OPTIONS.map((count) => (
+        <span>{count}</span>
+      ))}
+    </div>
   </div>
 
   <div class="ea-pricing-summary">
@@ -45,28 +51,18 @@ const showRecurringOptions = qualifiesForRecurringDelivery(initial.adCount)
       <div class="ea-pricing-total" data-ea-total>{formatUsd(initial.total)}</div>
       <div class="ea-pricing-per">
         <span data-ea-per-ad>{formatUsd(initial.pricePerAd)}</span> per ad
-        <span
-          class="ea-pricing-savings"
-          data-ea-savings
-          hidden={initial.savings <= 0}
-        >
-          · Save <span data-ea-savings-amount>{formatUsd(initial.savings)}</span>
-        </span>
+      </div>
+      <div
+        class="ea-pricing-savings"
+        data-ea-savings
+        hidden={initial.savings <= 0}
+      >
+        Save <span data-ea-savings-amount>{formatUsd(initial.savings)}</span>
       </div>
     </div>
   </div>
 
-  <div class="ea-pricing-extras" data-ea-extras hidden={!showRecurringOptions}>
-    <div class="ea-pricing-audit" data-ea-audit>
-      <span class="ea-pricing-audit-badge">Included</span>
-      <div class="ea-pricing-audit-copy">
-        <p class="ea-pricing-audit-title">Free creative audit</p>
-        <p class="ea-pricing-audit-desc">
-          See what's working, what to fix, and what to test next—included with 20+ ads.
-        </p>
-      </div>
-    </div>
-
+  <div class="ea-pricing-extras" data-ea-extras>
     <fieldset class="ea-pricing-delivery">
       <legend class="ea-pricing-delivery-label">Delivery schedule</legend>
       <div class="ea-pricing-delivery-options" role="radiogroup" aria-label="Delivery schedule">
@@ -90,11 +86,20 @@ const showRecurringOptions = qualifiesForRecurringDelivery(initial.adCount)
     </fieldset>
   </div>
 
-  <button type="button" class="ea-pricing-cta" data-ea-checkout>
-    Order <span data-ea-cta-count>{initial.adCount}</span> ads — <span data-ea-cta-total
-      >{formatUsd(initial.total)}</span
-    >
+  <button
+    type="button"
+    class="ea-pricing-cta"
+    data-ea-checkout
+    aria-label={`Order ${initial.adCount} ads for ${formatUsd(initial.total)}`}
+  >
+    <span class="ea-pricing-cta-desktop">
+      Order <span data-ea-cta-count>{initial.adCount}</span> ads — <span data-ea-cta-total
+        >{formatUsd(initial.total)}</span
+      >
+    </span>
+    <span class="ea-pricing-cta-mobile">Get started now</span>
     <svg
+      class="ea-pricing-cta-icon"
       width="16"
       height="16"
       viewBox="0 0 24 24"
@@ -111,14 +116,12 @@ const showRecurringOptions = qualifiesForRecurringDelivery(initial.adCount)
   <p class="ea-pricing-note" data-ea-note>One-time payment · Brief sent after checkout</p>
 </div>
 
-<PricingCheckout client:load />
-
 <script>
   import {
-    clampAdCount,
+    getAdCountFromIndex,
+    getAdCountIndex,
     getOrderSummary,
     formatUsd,
-    qualifiesForRecurringDelivery,
     type DeliverySchedule,
   } from '../../data/1800-ads-pricing'
 
@@ -143,21 +146,16 @@ const showRecurringOptions = qualifiesForRecurringDelivery(initial.adCount)
 
     if (!(slider instanceof HTMLInputElement)) return
 
-    let currentCount = clampAdCount(Number(slider.value))
+    let currentCount = getAdCountFromIndex(Number(slider.value))
     let currentDelivery: DeliverySchedule = 'one-time'
 
     const updateNote = () => {
       if (!noteEl) return
-      if (!qualifiesForRecurringDelivery(currentCount)) {
-        noteEl.textContent = 'One-time payment · Brief sent after checkout'
-        return
-      }
       if (currentDelivery === 'one-time') {
         noteEl.textContent = 'One-time payment · Brief sent after checkout'
         return
       }
-      const cadence = currentDelivery === 'weekly' ? 'weekly' : 'bi-weekly'
-      noteEl.textContent = `Recurring ${cadence} delivery · Brief sent after checkout`
+      noteEl.textContent = 'Monthly delivery · Brief sent after checkout'
     }
 
     const updateDeliveryUI = () => {
@@ -170,14 +168,11 @@ const showRecurringOptions = qualifiesForRecurringDelivery(initial.adCount)
       updateNote()
     }
 
-    const updateUI = (count: number) => {
-      currentCount = clampAdCount(count)
+    const updateUI = (index: number) => {
+      currentCount = getAdCountFromIndex(index)
       const order = getOrderSummary(currentCount)
-      const showExtras = qualifiesForRecurringDelivery(order.adCount)
 
-      if (!showExtras) currentDelivery = 'one-time'
-
-      slider.value = String(order.adCount)
+      slider.value = String(getAdCountIndex(order.adCount))
       slider.setAttribute('aria-valuenow', String(order.adCount))
       slider.setAttribute(
         'aria-valuetext',
@@ -189,6 +184,10 @@ const showRecurringOptions = qualifiesForRecurringDelivery(initial.adCount)
       if (perAdEl) perAdEl.textContent = formatUsd(order.pricePerAd)
       if (ctaCountEl) ctaCountEl.textContent = String(order.adCount)
       if (ctaTotalEl) ctaTotalEl.textContent = formatUsd(order.total)
+      checkoutBtn?.setAttribute(
+        'aria-label',
+        `Order ${order.adCount} ads for ${formatUsd(order.total)}`,
+      )
 
       if (savingsEl && savingsAmountEl) {
         if (order.savings > 0) {
@@ -199,10 +198,7 @@ const showRecurringOptions = qualifiesForRecurringDelivery(initial.adCount)
         }
       }
 
-      if (extrasEl) {
-        if (showExtras) extrasEl.removeAttribute('hidden')
-        else extrasEl.setAttribute('hidden', '')
-      }
+      if (extrasEl) extrasEl.removeAttribute('hidden')
 
       updateDeliveryUI()
     }
@@ -211,10 +207,12 @@ const showRecurringOptions = qualifiesForRecurringDelivery(initial.adCount)
       updateUI(Number(slider.value))
     })
 
+    updateUI(initialIndex)
+
     deliveryButtons.forEach((btn) => {
       btn.addEventListener('click', () => {
         const schedule = btn.getAttribute('data-ea-delivery') as DeliverySchedule
-        if (!schedule || !qualifiesForRecurringDelivery(currentCount)) return
+        if (!schedule) return
         currentDelivery = schedule
         updateDeliveryUI()
       })
@@ -247,14 +245,23 @@ const showRecurringOptions = qualifiesForRecurringDelivery(initial.adCount)
         /* ignore */
       }
 
-      document.dispatchEvent(
-        new CustomEvent('open-1800-checkout', {
-          detail: {
-            adCount: currentCount,
-            deliverySchedule: currentDelivery,
-          },
-        }),
-      )
+      const detail = {
+        adCount: currentCount,
+        deliverySchedule: currentDelivery,
+      }
+
+      const openCheckout = () => {
+        document.dispatchEvent(
+          new CustomEvent('open-1800-checkout', { detail }),
+        )
+      }
+
+      openCheckout()
+
+      if (!document.querySelector('.checkout-overlay')) {
+        window.setTimeout(openCheckout, 300)
+        window.setTimeout(openCheckout, 1000)
+      }
     })
   }
 
@@ -266,10 +273,9 @@ const showRecurringOptions = qualifiesForRecurringDelivery(initial.adCount)
   .ea-pricing-card {
     height: 100%;
     padding: clamp(2rem, 3.5vw, 2.75rem);
-    border: 1px solid #e2dbf0;
+    border: 1px solid #e0e0e6;
     border-radius: 20px;
-    background: linear-gradient(180deg, #faf8ff 0%, #ffffff 100%);
-    box-shadow: 0 20px 50px rgba(45, 20, 80, 0.08);
+    background: var(--brand-cream-dark);
   }
 
   .ea-pricing-slider-wrap {
@@ -279,17 +285,17 @@ const showRecurringOptions = qualifiesForRecurringDelivery(initial.adCount)
   .ea-pricing-slider-label {
     display: block;
     margin-bottom: 1rem;
-    font-family: 'Inter Tight', 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-family: var(--ea-font-sans);
     font-size: 1rem;
-    font-weight: 700;
+    font-weight: 600;
     letter-spacing: -0.02em;
-    color: #11110f;
+    color: var(--brand-ink);
   }
 
   .ea-pricing-slider-meta {
     display: flex;
     justify-content: space-between;
-    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-family: var(--ea-font-sans);
     font-size: 10px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -297,13 +303,31 @@ const showRecurringOptions = qualifiesForRecurringDelivery(initial.adCount)
     margin-bottom: 0.5rem;
   }
 
+  .ea-pricing-slider-ticks {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.45rem;
+    padding: 0 2px;
+    font-family: var(--ea-font-sans);
+    font-size: 11px;
+    color: #8a8398;
+  }
+
   .ea-pricing-slider {
     width: 100%;
     height: 10px;
     appearance: none;
     border-radius: 999px;
-    background: #e2e0e8;
+    background: var(--brand-white);
+    border: 1px solid rgba(42, 8, 16, 0.08);
     cursor: pointer;
+  }
+
+  .ea-pricing-slider::-moz-range-track {
+    height: 10px;
+    border-radius: 999px;
+    background: var(--brand-white);
+    border: 1px solid rgba(42, 8, 16, 0.08);
   }
 
   .ea-pricing-slider::-webkit-slider-thumb {
@@ -312,8 +336,8 @@ const showRecurringOptions = qualifiesForRecurringDelivery(initial.adCount)
     height: 30px;
     border-radius: 50%;
     border: 0;
-    background: linear-gradient(135deg, #ff8a3d 0%, #e84b6f 50%, #7b3fe4 100%);
-    box-shadow: 0 4px 14px rgba(123, 63, 228, 0.25);
+    background: var(--brand-red);
+    box-shadow: 0 4px 14px rgba(200, 16, 46, 0.35);
   }
 
   .ea-pricing-slider::-moz-range-thumb {
@@ -321,82 +345,131 @@ const showRecurringOptions = qualifiesForRecurringDelivery(initial.adCount)
     height: 30px;
     border-radius: 50%;
     border: 0;
-    background: linear-gradient(135deg, #ff8a3d 0%, #e84b6f 50%, #7b3fe4 100%);
-    box-shadow: 0 4px 14px rgba(123, 63, 228, 0.25);
+    background: var(--brand-red);
+    box-shadow: 0 4px 14px rgba(200, 16, 46, 0.35);
   }
 
   .ea-pricing-summary {
     display: flex;
-    align-items: flex-end;
+    align-items: center;
     justify-content: space-between;
-    gap: 1.25rem;
+    gap: 1rem;
     margin-bottom: 1.75rem;
     padding-bottom: 1.75rem;
-    border-bottom: 1px solid #e2dbf0;
-    overflow: visible;
+    border-bottom: 1px solid var(--brand-line);
   }
 
   .ea-pricing-count-block {
     display: flex;
     flex-direction: column;
     gap: 0.2rem;
-    flex-shrink: 0;
-    min-width: fit-content;
-    overflow: visible;
-    padding-right: 0.15rem;
+    flex: 0 1 auto;
+    min-width: 0;
   }
 
   .ea-pricing-quantity-value {
-    display: inline-block;
-    font-family: 'Inter Tight', 'Plus Jakarta Sans', system-ui, sans-serif;
-    font-size: clamp(3.25rem, 9vw, 4.25rem);
-    font-weight: 800;
-    line-height: 1.05;
-    letter-spacing: -0.03em;
-    padding-right: 0.05em;
-    background: linear-gradient(90deg, #ff8a3d 0%, #ff6b2e 22%, #e84b6f 55%, #9c42e0 80%, #7b3fe4 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    display: block;
+    font-family: var(--ea-font-display);
+    font-size: clamp(2.75rem, 8vw, 4.25rem);
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--brand-red);
   }
 
   .ea-pricing-quantity-label {
-    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-family: var(--ea-font-sans);
     font-size: 10px;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: #11110f;
+    color: var(--brand-ink);
     white-space: nowrap;
   }
 
   .ea-pricing-price-block {
-    flex-shrink: 1;
+    flex: 1 1 auto;
     min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.2rem;
     text-align: right;
   }
 
   .ea-pricing-total {
-    font-family: 'Inter Tight', 'Plus Jakarta Sans', system-ui, sans-serif;
-    font-size: clamp(2rem, 5.5vw, 2.75rem);
-    font-weight: 800;
+    font-family: var(--ea-font-display);
+    font-size: clamp(1.75rem, 5vw, 2.75rem);
+    font-weight: 400;
     letter-spacing: -0.03em;
-    color: #11110f;
+    color: var(--brand-ink);
     line-height: 1;
+    white-space: nowrap;
   }
 
   .ea-pricing-per {
-    margin-top: 0.35rem;
-    font-size: 0.9375rem;
-    color: #6b6677;
+    font-size: 0.875rem;
+    line-height: 1.35;
+    color: var(--brand-muted);
+    white-space: nowrap;
   }
 
   .ea-pricing-savings {
-    color: #673bec;
-    font-weight: 700;
+    font-family: var(--ea-font-sans);
+    font-size: 0.8125rem;
+    line-height: 1.35;
+    color: var(--brand-red);
+    font-weight: 600;
+    white-space: nowrap;
   }
 
   .ea-pricing-savings[hidden] {
     display: none;
+  }
+
+  @media (max-width: 540px) {
+    .ea-pricing-card {
+      padding: 1.5rem 1.15rem;
+    }
+
+    .ea-pricing-summary {
+      gap: 0.75rem;
+      margin-bottom: 1.35rem;
+      padding-bottom: 1.35rem;
+    }
+
+    .ea-pricing-quantity-value {
+      font-size: clamp(2.25rem, 14vw, 2.75rem);
+    }
+
+    .ea-pricing-total {
+      font-size: clamp(1.5rem, 8vw, 1.875rem);
+    }
+
+    .ea-pricing-per,
+    .ea-pricing-savings {
+      font-size: 0.75rem;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .ea-pricing-summary {
+      flex-direction: column;
+      align-items: stretch;
+      text-align: left;
+    }
+
+    .ea-pricing-count-block {
+      flex-direction: row;
+      align-items: baseline;
+      gap: 0.45rem;
+    }
+
+    .ea-pricing-price-block {
+      align-items: flex-start;
+      text-align: left;
+      padding-top: 0.35rem;
+      border-top: 1px solid var(--brand-line);
+    }
   }
 
   .ea-pricing-extras {
@@ -410,45 +483,6 @@ const showRecurringOptions = qualifiesForRecurringDelivery(initial.adCount)
     display: none;
   }
 
-  .ea-pricing-audit {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.85rem;
-    padding: 1rem 1.1rem;
-    border-radius: 14px;
-    border: 1px solid rgba(103, 59, 236, 0.2);
-    background: linear-gradient(135deg, rgba(103, 59, 236, 0.08) 0%, rgba(255, 107, 46, 0.06) 100%);
-  }
-
-  .ea-pricing-audit-badge {
-    flex-shrink: 0;
-    padding: 0.25rem 0.55rem;
-    border-radius: 999px;
-    background: #673bec;
-    color: #fff;
-    font-family: 'JetBrains Mono', ui-monospace, monospace;
-    font-size: 9px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-
-  .ea-pricing-audit-title {
-    margin: 0 0 0.2rem;
-    font-family: 'Inter Tight', 'Plus Jakarta Sans', system-ui, sans-serif;
-    font-size: 0.9375rem;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    color: #11110f;
-  }
-
-  .ea-pricing-audit-desc {
-    margin: 0;
-    font-size: 0.8125rem;
-    line-height: 1.45;
-    color: #6b6677;
-  }
-
   .ea-pricing-delivery {
     margin: 0;
     padding: 0;
@@ -459,16 +493,16 @@ const showRecurringOptions = qualifiesForRecurringDelivery(initial.adCount)
   .ea-pricing-delivery-label {
     display: block;
     margin-bottom: 0.65rem;
-    font-family: 'Inter Tight', 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-family: var(--ea-font-sans);
     font-size: 0.875rem;
-    font-weight: 700;
+    font-weight: 600;
     letter-spacing: -0.01em;
-    color: #11110f;
+    color: var(--brand-ink);
   }
 
   .ea-pricing-delivery-options {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0.5rem;
   }
 
@@ -485,8 +519,8 @@ const showRecurringOptions = qualifiesForRecurringDelivery(initial.adCount)
     gap: 0.15rem;
     padding: 0.65rem 0.75rem;
     border-radius: 12px;
-    border: 1px solid #e2dbf0;
-    background: #fff;
+    border: 1px solid var(--brand-line);
+    background: var(--brand-cream);
     text-align: left;
     cursor: pointer;
     transition:
@@ -500,21 +534,26 @@ const showRecurringOptions = qualifiesForRecurringDelivery(initial.adCount)
   }
 
   .ea-pricing-delivery-option.is-active {
-    border-color: #7b3fe4;
-    background: rgba(123, 63, 228, 0.06);
-    box-shadow: inset 0 0 0 1px rgba(123, 63, 228, 0.15);
+    border-color: var(--brand-red);
+    background: rgba(200, 16, 46, 0.08);
+    box-shadow: inset 0 0 0 1px rgba(200, 16, 46, 0.15);
   }
 
   .ea-pricing-delivery-option-label {
-    font-family: 'Inter Tight', 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-family: var(--ea-font-sans);
     font-size: 0.8125rem;
-    font-weight: 700;
-    color: #11110f;
+    font-weight: 600;
+    color: var(--brand-ink);
   }
 
   .ea-pricing-delivery-option-desc {
+    font-family: var(--ea-font-sans);
     font-size: 0.6875rem;
     color: #8a8398;
+  }
+
+  .ea-pricing-cta-mobile {
+    display: none;
   }
 
   .ea-pricing-cta {
@@ -527,21 +566,39 @@ const showRecurringOptions = qualifiesForRecurringDelivery(initial.adCount)
     padding: 0.9rem 1.5rem;
     border: 0;
     border-radius: 999px;
-    background: linear-gradient(90deg, #ff8a3d 0%, #ff6b2e 22%, #e84b6f 55%, #9c42e0 80%, #7b3fe4 100%);
-    color: #fff;
-    font-family: 'Inter Tight', 'Plus Jakarta Sans', system-ui, sans-serif;
+    background: var(--brand-red);
+    color: var(--brand-white);
+    font-family: var(--ea-font-sans);
     font-size: 1rem;
-    font-weight: 700;
+    font-weight: 600;
+    white-space: nowrap;
     cursor: pointer;
-    box-shadow: 0 8px 24px -8px rgba(232, 75, 111, 0.45);
+    box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.3);
     transition:
       transform 0.18s ease,
       filter 0.18s ease;
   }
 
+  @media (max-width: 540px) {
+    .ea-pricing-cta {
+      min-height: 48px;
+      padding: 0.85rem 1.25rem;
+      font-size: 0.9375rem;
+    }
+
+    .ea-pricing-cta-desktop,
+    .ea-pricing-cta-icon {
+      display: none;
+    }
+
+    .ea-pricing-cta-mobile {
+      display: inline;
+    }
+  }
+
   .ea-pricing-cta:hover {
     transform: translateY(-1px);
-    filter: brightness(1.04);
+    filter: brightness(1.06);
   }
 
   .ea-pricing-note {

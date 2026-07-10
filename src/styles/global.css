@@ -1,3 +1,5 @@
+@import './brand.css';
+
 *,
 *::before,
 *::after {
@@ -11,8 +13,10 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  background: #fff;
-  color: #11110f;
+  background: var(--brand-cream);
+  color: var(--brand-ink);
+  font-family: var(--ea-font-sans);
+  -webkit-font-smoothing: antialiased;
 }
 
 img {

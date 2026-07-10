@@ -1,0 +1,83 @@
+/* 1-800 Ads classic brand tokens */
+:root {
+  --brand-red: #c8102e;
+  --brand-red-dark: #9b0c24;
+  --brand-red-deep: #7a0019;
+  --brand-cream: #fff8f0;
+  --brand-cream-dark: #f3e8dc;
+  --brand-yellow: #fff0a8;
+  --brand-yellow-soft: #fff8d6;
+  --brand-white: #ffffff;
+  --brand-ink: #2a0810;
+  --brand-muted: rgba(42, 8, 16, 0.72);
+  --brand-muted-on-red: rgba(255, 255, 255, 0.82);
+  --brand-line: rgba(122, 0, 25, 0.14);
+  --brand-line-on-red: rgba(255, 255, 255, 0.22);
+
+  --ea-bg: var(--brand-cream);
+  --ea-ink: var(--brand-ink);
+  --ea-muted: var(--brand-muted);
+  --ea-line: var(--brand-line);
+  --ea-surface: var(--brand-cream-dark);
+  --ea-dark: var(--brand-red-dark);
+  --ea-accent: var(--brand-red);
+  --ea-grad: linear-gradient(180deg, var(--brand-yellow) 0%, var(--brand-yellow-soft) 100%);
+  --ea-card-bg: var(--brand-cream);
+  --ea-card-border: var(--brand-line);
+  --ea-font-display: 'Advercase', Georgia, 'Times New Roman', serif;
+  --ea-font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --ea-font-mono: var(--ea-font-sans);
+}
+
+@font-face {
+  font-family: 'Advercase';
+  src: url('/fonts/AdvercaseFont-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+[class*='-title'],
+[class*='-heading'],
+.ea-h-xl,
+.ea-scroll-line,
+.ea-process-title {
+  font-family: var(--ea-font-display);
+  font-weight: 400 !important;
+}
+
+p,
+li,
+label,
+button,
+input,
+textarea,
+select {
+  font-family: var(--ea-font-sans);
+}
+
+.ea-section-light {
+  --ea-bg: var(--brand-cream);
+  --ea-ink: var(--brand-ink);
+  --ea-muted: var(--brand-muted);
+  --ea-line: var(--brand-line);
+  --ea-surface: var(--brand-cream-dark);
+  --ea-accent: var(--brand-red);
+}
+
+.ea-grad-text {
+  color: var(--brand-red);
+  -webkit-text-fill-color: var(--brand-red);
+  background: none;
+}
+
+.ea-section-light [class*='-grad'] {
+  color: var(--brand-ink);
+  -webkit-text-fill-color: var(--brand-ink);
+}

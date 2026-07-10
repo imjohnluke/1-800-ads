@@ -18,13 +18,13 @@ const angleNotes = [
 ]
 ---
 
-<section class="ea-close-section" id="why" aria-labelledby="ea-close-heading">
+<section class="ea-close-section ea-section-light" id="why" data-nav-theme="cream" aria-labelledby="ea-close-heading">
   <div class="ea-close-wrap">
     <div class="ea-close-header">
       <span class="ea-close-eyebrow">Why 1-800 Ads</span>
       <h2 id="ea-close-heading" class="ea-close-title">
         All the creative you need.<br />
-        <span class="ea-close-title-grad">None of the lock-in.</span>
+        None of the lock-in.
       </h2>
     </div>
 
@@ -114,19 +114,16 @@ const angleNotes = [
 
 <style>
   .ea-close-section {
-    --ea-ink: #11110f;
-    --ea-muted: #6b6677;
-    --ea-accent: #ff6b2e;
-    --ea-grad: linear-gradient(90deg, #ff8a3d 0%, #ff6b2e 22%, #e84b6f 55%, #9c42e0 80%, #7b3fe4 100%);
-    --ea-card-bg: #f0f0f3;
+    --ea-ink: var(--brand-ink);
+    --ea-muted: var(--brand-muted);
+    --ea-accent: var(--brand-red);
+    --ea-card-bg: var(--brand-cream-dark);
     --ea-card-border: #e0e0e6;
-    --ea-font-display: 'Inter Tight', 'Plus Jakarta Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    --ea-font-sans: 'Inter', 'DM Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
     --ea-pad: clamp(20px, 3vw, 28px);
     --ea-maxw: 1232px;
 
     padding: clamp(72px, 9vw, 104px) 0 clamp(48px, 6vw, 72px);
-    background: #fff;
+    background: var(--brand-cream);
     font-family: var(--ea-font-sans);
     color: var(--ea-ink);
   }
@@ -145,7 +142,7 @@ const angleNotes = [
 
   .ea-close-eyebrow {
     display: inline-block;
-    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-family: var(--ea-font-sans);
     font-size: 11px;
     font-weight: 500;
     letter-spacing: 0.1em;
@@ -164,11 +161,8 @@ const angleNotes = [
   }
 
   .ea-close-title-grad {
-    background: var(--ea-grad);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: transparent;
+    color: var(--brand-red);
+    -webkit-text-fill-color: var(--brand-red);
   }
 
   .ea-close-bento {
@@ -265,7 +259,7 @@ const angleNotes = [
     width: 100%;
     height: 100%;
     flex: 1;
-    background: #fff;
+    background: var(--brand-cream);
     border: 1px solid #e4e4ea;
     border-radius: 16px;
     overflow: hidden;
@@ -326,7 +320,7 @@ const angleNotes = [
   }
 
   .ea-close-idea-center span:last-child {
-    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-family: var(--ea-font-sans);
     font-size: 9px;
     font-weight: 600;
     letter-spacing: 0.08em;
@@ -431,7 +425,7 @@ const angleNotes = [
   .ea-close-inbox {
     width: 100%;
     margin-top: auto;
-    background: #fff;
+    background: var(--brand-cream);
     border: 1px solid #e4e4ea;
     border-bottom: 0;
     border-radius: 14px 14px 0 0;
@@ -465,7 +459,7 @@ const angleNotes = [
   }
 
   .ea-close-inbox-time {
-    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-family: var(--ea-font-sans);
     font-size: 9px;
     color: #8a8398;
   }
@@ -497,11 +491,11 @@ const angleNotes = [
   }
 
   .ea-close-file-icon--feed {
-    background: linear-gradient(135deg, #ff8a3d 0%, #e84b6f 100%);
+    background: linear-gradient(135deg, #ff8a3d 0%, var(--brand-red-dark) 100%);
   }
 
   .ea-close-file-icon--story {
-    background: linear-gradient(135deg, #e84b6f 0%, #7b3fe4 100%);
+    background: linear-gradient(135deg, var(--brand-red-dark) 0%, var(--brand-red) 100%);
   }
 
   .ea-close-inbox-files li div {
@@ -532,12 +526,12 @@ const angleNotes = [
   }
 
   .ea-close-inbox-eta {
-    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-family: var(--ea-font-sans);
     font-size: 10px;
     font-weight: 700;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: #7b3fe4;
+    color: var(--brand-red);
   }
 
   @media (max-width: 820px) {

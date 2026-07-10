@@ -1,6 +1,7 @@
 ---
 import BaseLayout from './BaseLayout.astro'
 import Header from '../components/Header.astro'
+import PricingCheckout from '../components/1800-ads/PricingCheckout'
 
 interface Props {
   title: string
@@ -26,4 +27,5 @@ const { title, description, image, canonicalURL, noIndex } = Astro.props
     <slot />
   </main>
   <slot name="footer" />
+  <PricingCheckout client:load />
 </BaseLayout>
