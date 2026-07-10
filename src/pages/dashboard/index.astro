@@ -1,0 +1,19 @@
+---
+export const prerender = false
+
+import DashboardLayout from '../../layouts/DashboardLayout.astro'
+import DashboardApp from '../../components/1800-ads/DashboardApp'
+import '../../styles/customer-portal.css'
+
+const customer = Astro.locals.customer
+---
+
+<DashboardLayout title="Home">
+  <DashboardApp
+    client:load
+    view="home"
+    initialCustomer={customer
+      ? { email: customer.email, hasPassword: customer.hasPassword }
+      : undefined}
+  />
+</DashboardLayout>

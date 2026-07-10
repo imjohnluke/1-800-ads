@@ -56,6 +56,37 @@ Submitted briefs save to a Notion database. Setup:
 
 Uploads store filenames and sizes in **Uploads** for now. Notion needs public file URLs for attachments, so actual file storage (S3, Uploadthing, etc.) can be added later if needed.
 
+## Customer portal
+
+Customers access their dashboard at `/track/` (sign-in) and `/dashboard/` (authenticated).
+
+1. **Access with email** — enter the checkout email; we match it to Notion orders and open the dashboard.
+2. **Create account** — on first visit, set a password to sign in next time (stored in `data/customers.json` locally; set `CUSTOMER_DATA_PATH` on Railway for persistence).
+3. **Sign in** — returning customers use email + password.
+
+Env: `SESSION_SECRET` (required in production). Optional: `CUSTOMER_DATA_PATH`.
+
+Post-checkout links with `?session_id=` auto-verify via Stripe and land customers in the dashboard.
+
+## Order tracking → Notion
+
+Order status syncs from your Notion orders board — when you move a card, customers see the new status on `/dashboard/`.
+
+1. Create a second Notion database (**Orders**) with these columns (names must match exactly):
+   - **Brand** — Title
+   - **Customer Email** — Email
+   - **Stripe Session** — Text
+   - **Ad Count** — Number
+   - **Total** — Number
+   - **Delivery** — Select (`One-time`, `Monthly`)
+   - **Status** — Select (`Paid`, `Brief Pending`, `Brief Received`, `In Production`, `In Review`, `Delivered`)
+   - **Brand URL** — URL
+   - **Paid At** — Date
+2. Share it with your integration → `NOTION_ORDERS_DATABASE_ID`
+3. In [Stripe → Webhooks](https://dashboard.stripe.com/webhooks), add endpoint `https://your-domain.com/api/stripe-webhook/` for `checkout.session.completed` → `STRIPE_WEBHOOK_SECRET`
+
+Use a Kanban view grouped by **Status** as your ops board. Dragging cards updates what customers see on `/track/`.
+
 ## Deploy
 
 See **[DEPLOY.md](./DEPLOY.md)** for the full production checklist (Railway, env vars, DNS).
@@ -74,6 +105,8 @@ Set these in your host’s environment panel (Railway → **Variables**):
 - `PUBLIC_STRIPE_PUBLISHABLE_KEY`
 - `NOTION_API_KEY`
 - `NOTION_BRIEF_DATABASE_ID`
+- `NOTION_ORDERS_DATABASE_ID`
+- `STRIPE_WEBHOOK_SECRET`
 
 ## Branding
 
@@ -82,4 +115,7 @@ Set these in your host’s environment panel (Railway → **Variables**):
 
 
 - `/` — Landing page with pricing slider and Stripe checkout
+- `/brief/` — Post-checkout creative brief
+- `/track/` — Customer portal sign-in
+- `/dashboard/` — Authenticated customer dashboard (synced with Notion)
 - `/order-success/` — Post-checkout confirmation

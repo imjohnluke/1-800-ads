@@ -20,6 +20,7 @@ import Container from '../components/ui/Container.astro'
           statics in under 24 hours.
         </p>
         <a class="ea-success-btn" href="/brief/">Fill out your brief</a>
+        <a class="ea-success-btn ea-success-btn-secondary" href="/dashboard/">Go to your dashboard</a>
       </div>
     </Container>
   </section>
@@ -35,6 +36,9 @@ import Container from '../components/ui/Container.astro'
     max-width: 36rem;
     margin: 0 auto;
     text-align: center;
+    display: grid;
+    gap: 0.75rem;
+    justify-items: center;
   }
 
   .ea-success-label {
@@ -77,5 +81,10 @@ import Container from '../components/ui/Container.astro'
     font-size: 15px;
     font-weight: 600;
     text-decoration: none;
+  }
+
+  .ea-success-btn-secondary {
+    background: transparent;
+    border: 1px solid rgba(42, 8, 16, 0.14);
   }
 </style>

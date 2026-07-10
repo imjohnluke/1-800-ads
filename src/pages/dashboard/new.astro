@@ -1,0 +1,43 @@
+---
+export const prerender = false
+
+import DashboardLayout from '../../layouts/DashboardLayout.astro'
+import DashboardSidebar from '../../components/1800-ads/DashboardSidebar'
+import PricingSlider from '../../components/1800-ads/PricingSlider.astro'
+import '../../styles/customer-portal.css'
+
+const customer = Astro.locals.customer
+if (!customer) {
+  return Astro.redirect('/track/')
+}
+---
+
+<DashboardLayout title="New Order">
+  <div class="ea-dash-app">
+    <DashboardSidebar
+      client:load
+      view="new-order"
+      customer={{
+        email: customer.email,
+        hasPassword: customer.hasPassword,
+      }}
+    />
+    <main class="ea-dash-main">
+      <header class="ea-dash-page-header">
+        <h1 class="ea-dash-page-title">New order</h1>
+        <p class="ea-dash-page-copy">
+          Choose your pack and checkout — your creative brief is next.
+        </p>
+      </header>
+      <div class="ea-dash-pricing-wrap">
+        <PricingSlider />
+      </div>
+    </main>
+  </div>
+</DashboardLayout>
+
+<style is:global>
+  .ea-dash-pricing-wrap {
+    width: 100%;
+  }
+</style>

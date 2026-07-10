@@ -2,7 +2,14 @@ export const prerender = false
 
 import type { APIRoute } from 'astro'
 import { rateLimit, getClientIp } from '../../lib/rate-limit'
-import { isNotionConfigured, saveBriefToNotion } from '../../lib/notion'
+import { getCheckoutSessionDetails } from '../../lib/stripe'
+import {
+  createOrderInNotion,
+  findOrderBySessionId,
+  isOrdersNotionConfigured,
+  linkOrderStripeDetails,
+  saveBriefToOrderTracker,
+} from '../../lib/notion-orders'
 
 const MAX_FILE_BYTES = 25 * 1024 * 1024
 const MAX_TOTAL_BYTES = 100 * 1024 * 1024
@@ -24,6 +31,7 @@ export const POST: APIRoute = async ({ request }) => {
     const adStyles = String(form.get('adStyles') ?? '').trim()
     const promotions = String(form.get('promotions') ?? '').trim()
     const sessionId = String(form.get('sessionId') ?? '').trim() || undefined
+    const formEmail = String(form.get('customerEmail') ?? '').trim() || undefined
 
     if (!brandName) {
       return new Response(JSON.stringify({ error: 'Brand name is required.' }), {
@@ -69,21 +77,51 @@ export const POST: APIRoute = async ({ request }) => {
       })
     }
 
+    let customerEmail = formEmail
+
+    if (sessionId && import.meta.env.STRIPE_SECRET_KEY) {
+      try {
+        const checkout = await getCheckoutSessionDetails(sessionId)
+        customerEmail = checkout.email ?? customerEmail
+
+        if (isOrdersNotionConfigured() && customerEmail) {
+          const existing = await findOrderBySessionId(sessionId)
+          if (!existing) {
+            await createOrderInNotion({
+              brandName: `${checkout.adCount || 'New'} static ads`,
+              customerEmail,
+              stripeSession: sessionId,
+              adCount: checkout.adCount,
+              total: checkout.total,
+              deliverySchedule: checkout.deliverySchedule,
+              paidAt: checkout.paidAt,
+            })
+          } else {
+            await linkOrderStripeDetails(existing.id, {
+              customerEmail,
+              stripeSession: sessionId,
+            })
+          }
+        }
+      } catch (err) {
+        console.warn('[submit-brief] Could not load Stripe session', sessionId, err)
+      }
+    }
+
     const payload = {
-      product: '1800-ads',
       brandName,
       brandUrl,
       adStyles,
       promotions,
       sessionId,
+      customerEmail,
       uploadedFiles: uploads
         .filter((file) => file.size > 0)
         .map((file) => ({ name: file.name, size: file.size, type: file.type || 'application/octet-stream' })),
-      submittedAt: new Date().toISOString(),
     }
 
-    if (isNotionConfigured()) {
-      await saveBriefToNotion(payload)
+    if (isOrdersNotionConfigured()) {
+      await saveBriefToOrderTracker(payload)
     } else {
       console.warn('[submit-brief] Notion not configured — logging submission only')
       console.info('[submit-brief]', JSON.stringify(payload))

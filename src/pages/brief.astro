@@ -205,6 +205,19 @@ const sessionId = Astro.url.searchParams.get('session_id') ?? undefined
     color: var(--brand-ink);
   }
 
+  .ea-brief-email-field {
+    display: grid;
+    gap: 0.5rem;
+    margin-top: 1.25rem;
+  }
+
+  .ea-brief-email-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--brand-ink);
+    text-align: left;
+  }
+
   .ea-brief-error {
     margin: 1rem 0 0;
     text-align: center;
