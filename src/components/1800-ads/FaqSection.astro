@@ -58,6 +58,8 @@ import { FAQ_ITEMS } from '../../data/1800-ads-faq'
   .ea-faq-section {
     --ea-pad: clamp(20px, 3vw, 28px);
     --ea-maxw: 1232px;
+    --ea-card-bg: var(--brand-cream-dark);
+    --ea-card-border: var(--brand-line);
     background: var(--brand-cream);
     padding: clamp(52px, 7vw, 88px) 0;
     font-family: var(--ea-font-sans);
@@ -131,13 +133,27 @@ import { FAQ_ITEMS } from '../../data/1800-ads-faq'
     max-width: 42rem;
   }
 
+  .ea-faq-items {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .ea-faq-item {
+    background: var(--ea-card-bg);
+    border: 1px solid var(--ea-card-border);
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(17, 17, 15, 0.04);
+  }
+
   .ea-faq-q {
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 16px;
-    padding: 22px 0;
+    padding: 22px clamp(20px, 2.5vw, 28px);
     font-family: var(--ea-font-sans);
     font-size: 16px;
     font-weight: 600;
@@ -185,7 +201,7 @@ import { FAQ_ITEMS } from '../../data/1800-ads-faq'
   }
 
   .ea-faq-a-inner {
-    padding: 0 0 22px;
+    padding: 0 clamp(20px, 2.5vw, 28px) 22px;
     font-size: 15px;
     line-height: 1.65;
     color: var(--ea-muted);
