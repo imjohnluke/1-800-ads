@@ -97,9 +97,13 @@ export const POST: APIRoute = async ({ request }) => {
     console.error('[create-checkout-session] Error:', err)
 
     let clientMessage = 'Something went wrong. Please try again.'
-    const stripeErr = err as { type?: string; code?: string }
-    if (stripeErr.type === 'StripeInvalidRequestError' && stripeErr.code === 'resource_missing') {
+    const stripeErr = err as { type?: string; code?: string; message?: string }
+    if (!import.meta.env.STRIPE_SECRET_KEY) {
+      clientMessage = 'Checkout is not configured on the server.'
+    } else if (stripeErr.type === 'StripeInvalidRequestError' && stripeErr.code === 'resource_missing') {
       clientMessage = 'Invalid coupon code. Please check and try again.'
+    } else if (stripeErr.type === 'StripeAuthenticationError') {
+      clientMessage = 'Stripe authentication failed. Check STRIPE_SECRET_KEY in Railway.'
     }
 
     return new Response(JSON.stringify({ error: clientMessage }), {

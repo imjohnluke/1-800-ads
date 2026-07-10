@@ -8,4 +8,8 @@ export default defineConfig({
   trailingSlash: 'always',
   adapter: node({ mode: 'standalone' }),
   integrations: [react()],
+  server: {
+    host: true,
+    port: 4321,
+  },
 })

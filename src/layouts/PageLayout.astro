@@ -12,6 +12,7 @@ interface Props {
 }
 
 const { title, description, image, canonicalURL, noIndex } = Astro.props
+const stripePublishableKey = import.meta.env.PUBLIC_STRIPE_PUBLISHABLE_KEY ?? ''
 ---
 
 <BaseLayout
@@ -27,5 +28,8 @@ const { title, description, image, canonicalURL, noIndex } = Astro.props
     <slot />
   </main>
   <slot name="footer" />
-  <PricingCheckout client:load />
+  <script is:inline define:vars={{ stripePublishableKey }}>
+    window.__STRIPE_PUBLISHABLE_KEY__ = stripePublishableKey || '';
+  </script>
+  <PricingCheckout client:load publishableKey={stripePublishableKey} />
 </BaseLayout>

@@ -3,7 +3,40 @@ import { loadStripe, type Stripe } from '@stripe/stripe-js'
 import { EmbeddedCheckoutProvider, EmbeddedCheckout } from '@stripe/react-stripe-js'
 import { formatUsd, getOrderSummary, getDeliveryScheduleLabel, type DeliverySchedule } from '../../data/1800-ads-pricing'
 
-export default function PricingCheckout() {
+declare global {
+  interface Window {
+    __STRIPE_PUBLISHABLE_KEY__?: string
+  }
+}
+
+type Props = {
+  publishableKey?: string
+}
+
+function resolvePublishableKey(propKey?: string) {
+  const trimmed = propKey?.trim()
+  if (trimmed) return trimmed
+  if (typeof window !== 'undefined' && window.__STRIPE_PUBLISHABLE_KEY__?.trim()) {
+    return window.__STRIPE_PUBLISHABLE_KEY__!.trim()
+  }
+  return ''
+}
+
+async function fetchPublishableKey() {
+  const endpoints = ['/api/stripe-config/', '/api/stripe-config']
+  for (const endpoint of endpoints) {
+    try {
+      const res = await fetch(endpoint)
+      const data = (await res.json()) as { publishableKey?: string; error?: string }
+      if (res.ok && data.publishableKey) return data.publishableKey
+    } catch {
+      /* try next endpoint */
+    }
+  }
+  return ''
+}
+
+export default function PricingCheckout({ publishableKey }: Props) {
   const [checkoutOpen, setCheckoutOpen] = useState(false)
   const [checkoutError, setCheckoutError] = useState<string | null>(null)
   const [adCount, setAdCount] = useState(10)
@@ -22,36 +55,38 @@ export default function PricingCheckout() {
   useEffect(() => {
     let cancelled = false
 
-    async function loadPublishableKey() {
-      try {
-        const res = await fetch('/api/stripe-config/')
-        const data = (await res.json()) as { publishableKey?: string; error?: string }
+    async function initStripe() {
+      let key = resolvePublishableKey(publishableKey)
+      if (!key) key = await fetchPublishableKey()
 
-        if (!res.ok || !data.publishableKey) {
-          throw new Error(data.error || 'Stripe is not configured.')
+      if (!key) {
+        if (!cancelled) {
+          setCheckoutError('Checkout is not configured. Missing Stripe publishable key.')
         }
+        return
+      }
 
-        if (!cancelled) {
-          setStripePromise(loadStripe(data.publishableKey))
-        }
-      } catch (err) {
-        if (!cancelled) {
-          setCheckoutError(
-            err instanceof Error ? err.message : 'Checkout is unavailable right now.',
-          )
-        }
-      } finally {
-        if (!cancelled) setStripeLoading(false)
+      if (!cancelled) {
+        setStripePromise(loadStripe(key))
       }
     }
 
-    loadPublishableKey()
+    initStripe()
+      .catch(() => {
+        if (!cancelled) {
+          setCheckoutError('Checkout is unavailable right now.')
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setStripeLoading(false)
+      })
+
     document.dispatchEvent(new Event('1800-checkout-ready'))
 
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [publishableKey])
 
   useEffect(() => {
     const handler = (e: Event) => {
@@ -103,19 +138,33 @@ export default function PricingCheckout() {
       /* ignore */
     }
 
-    const res = await fetch('/api/create-checkout-session/', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        adCount: order.adCount,
-        deliverySchedule,
-        coupon,
-        ...(fbclid ? { fbclid } : {}),
-      }),
-    })
-    const data = await res.json()
-    if (!res.ok) throw new Error(data.error || 'Failed to create checkout session')
-    return data.clientSecret
+    const endpoints = ['/api/create-checkout-session/', '/api/create-checkout-session']
+    let lastError = 'Failed to create checkout session'
+
+    for (const endpoint of endpoints) {
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          adCount: order.adCount,
+          deliverySchedule,
+          coupon,
+          ...(fbclid ? { fbclid } : {}),
+        }),
+      })
+
+      let data: { clientSecret?: string; error?: string } = {}
+      try {
+        data = await res.json()
+      } catch {
+        /* non-json response */
+      }
+
+      if (res.ok && data.clientSecret) return data.clientSecret
+      lastError = data.error || lastError
+    }
+
+    throw new Error(lastError)
   }, [order.adCount, deliverySchedule, stripePromise])
 
   if (!checkoutOpen) return null
