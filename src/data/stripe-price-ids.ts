@@ -2,11 +2,11 @@
 import type { AdCountOption } from './1800-ads-pricing'
 
 export const STRIPE_PRICE_IDS: Record<AdCountOption, string> = {
-  5: 'price_1TrQsACxHonHSapKMusalIC8',
-  10: 'price_1TrQsBCxHonHSapKRQeG4709',
-  20: 'price_1TrQsCCxHonHSapKIT3lfcnV',
-  50: 'price_1TrQsDCxHonHSapKNPe9hSXb',
-  100: 'price_1TrQsECxHonHSapK60IwNxXi',
+  5: 'price_1TtcPxCxHonHSapKKs3HB8By',
+  10: 'price_1TtcPyCxHonHSapKROsOUC4V',
+  20: 'price_1TtcPyCxHonHSapKfsV5GCRL',
+  50: 'price_1TtcPzCxHonHSapK7DmRrFFX',
+  100: 'price_1TtcQ0CxHonHSapKtGThp3kA',
 }
 
 export const STRIPE_PRODUCT_IDS: Record<AdCountOption, string> = {

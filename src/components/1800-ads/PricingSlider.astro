@@ -16,7 +16,10 @@ const initialIndex = getAdCountIndex(ADS_DEFAULT)
 
 <div class="ea-pricing-card" data-ea-pricing-root>
   <div class="ea-pricing-slider-wrap">
-    <label class="ea-pricing-slider-label" for="ea-ads-slider">How many static ads?</label>
+    <div class="ea-pricing-slider-heading">
+      <label class="ea-pricing-slider-label" for="ea-ads-slider">How many static ads?</label>
+      <span class="ea-pricing-popular" data-ea-popular>Most popular</span>
+    </div>
     <div class="ea-pricing-slider-meta">
       <span>{ADS_MIN}</span>
       <span>{ADS_MAX}</span>
@@ -143,6 +146,7 @@ const initialIndex = getAdCountIndex(ADS_DEFAULT)
     const extrasEl = root.querySelector('[data-ea-extras]')
     const noteEl = root.querySelector('[data-ea-note]')
     const deliveryButtons = root.querySelectorAll('[data-ea-delivery]')
+    const popularEl = root.querySelector('[data-ea-popular]')
 
     if (!(slider instanceof HTMLInputElement)) return
 
@@ -184,6 +188,7 @@ const initialIndex = getAdCountIndex(ADS_DEFAULT)
       if (perAdEl) perAdEl.textContent = formatUsd(order.pricePerAd)
       if (ctaCountEl) ctaCountEl.textContent = String(order.adCount)
       if (ctaTotalEl) ctaTotalEl.textContent = formatUsd(order.total)
+      if (popularEl) popularEl.toggleAttribute('hidden', order.adCount !== 10)
       checkoutBtn?.setAttribute(
         'aria-label',
         `Order ${order.adCount} ads for ${formatUsd(order.total)}`,
@@ -285,6 +290,39 @@ const initialIndex = getAdCountIndex(ADS_DEFAULT)
     font-weight: 600;
     letter-spacing: -0.02em;
     color: var(--brand-ink);
+  }
+
+  .ea-pricing-slider-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .ea-pricing-popular {
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: var(--brand-red, #c8102e);
+    color: #fff;
+    font-family: var(--ea-font-sans, 'Inter', sans-serif);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .ea-pricing-popular[hidden] {
+    display: none;
+  }
+
+  @media (max-width: 540px) {
+    .ea-pricing-popular {
+      display: none;
+    }
   }
 
   .ea-pricing-slider-meta {

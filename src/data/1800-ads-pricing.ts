@@ -4,7 +4,7 @@ export type AdCountOption = (typeof ADS_OPTIONS)[number]
 
 export const ADS_MIN = ADS_OPTIONS[0]
 export const ADS_MAX = ADS_OPTIONS[ADS_OPTIONS.length - 1]
-export const ADS_DEFAULT: AdCountOption = 5
+export const ADS_DEFAULT: AdCountOption = 10
 
 export type DeliverySchedule = 'one-time' | 'monthly'
 
@@ -15,11 +15,11 @@ export const DELIVERY_SCHEDULES = [
 
 /** Fixed order total per tier (USD) */
 export const ADS_TIER_PRICES: Record<AdCountOption, number> = {
-  5: 350,
-  10: 550,
-  20: 1000,
-  50: 2100,
-  100: 3800,
+  5: 249,
+  10: 399,
+  20: 699,
+  50: 1499,
+  100: 2499,
 }
 
 /** Per-ad rate at the smallest tier — used for savings comparison */

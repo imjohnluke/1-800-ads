@@ -45,11 +45,15 @@ const socialLinks = [
       </div>
 
       <div class="ea-footer-col">
-        <h4 class="ea-footer-col-title">Policies &amp; social</h4>
+        <h4 class="ea-footer-col-title">Policies</h4>
         <nav class="ea-footer-links" aria-label="Policies">
           {policyLinks.map((link) => <a href={link.href}>{link.label}</a>)}
         </nav>
-        <nav class="ea-footer-links ea-footer-social" aria-label="Social">
+      </div>
+
+      <div class="ea-footer-col">
+        <h4 class="ea-footer-col-title">Social</h4>
+        <nav class="ea-footer-links" aria-label="Social">
           {
             socialLinks.map((link) => (
               <a href={link.href} target="_blank" rel="noopener noreferrer">
@@ -57,6 +61,13 @@ const socialLinks = [
               </a>
             ))
           }
+        </nav>
+      </div>
+
+      <div class="ea-footer-col">
+        <h4 class="ea-footer-col-title">Support</h4>
+        <nav class="ea-footer-links" aria-label="Customer support">
+          <a href="mailto:jl@1-800ads.com">jl@1-800ads.com</a>
         </nav>
       </div>
     </div>
@@ -79,8 +90,9 @@ const socialLinks = [
 
   .ea-footer-grid {
     display: grid;
-    grid-template-columns: 1.4fr 1fr 1fr;
-    gap: clamp(32px, 5vw, 56px);
+    grid-template-columns: minmax(260px, 1fr) repeat(4, max-content);
+    column-gap: clamp(28px, 3vw, 42px);
+    row-gap: 32px;
   }
 
   .ea-footer-brand {
@@ -140,13 +152,13 @@ const socialLinks = [
     color: var(--brand-ink);
   }
 
-  .ea-footer-social {
-    margin-top: 4px;
-    padding-top: 14px;
-    border-top: 1px solid rgba(42, 8, 16, 0.08);
+  @media (max-width: 960px) {
+    .ea-footer-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 560px) {
     .ea-footer-grid {
       grid-template-columns: 1fr;
     }

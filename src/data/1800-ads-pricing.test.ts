@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   ADS_MIN,
   ADS_MAX,
+  ADS_DEFAULT,
   ADS_OPTIONS,
   DELIVERY_SCHEDULES,
   clampAdCount,
@@ -32,15 +33,26 @@ describe('1800-ads-pricing', () => {
     expect(getPricePerAd(ADS_MIN)).toBeGreaterThan(getPricePerAd(ADS_MAX))
   })
 
-  it('prices 20 ads at $1,000', () => {
-    expect(getTotalPrice(20)).toBe(1000)
-    expect(getPricePerAd(20)).toBe(50)
+  it('uses the approved tier ladder and defaults to 10 ads', () => {
+    expect(ADS_DEFAULT).toBe(10)
+    expect(ADS_OPTIONS.map((count) => getTotalPrice(count))).toEqual([
+      249,
+      399,
+      699,
+      1499,
+      2499,
+    ])
+  })
+
+  it('prices 20 ads at $699', () => {
+    expect(getTotalPrice(20)).toBe(699)
+    expect(getPricePerAd(20)).toBe(34.95)
   })
 
   it('returns consistent order totals', () => {
     const order = getOrderSummary(20)
     expect(order.adCount).toBe(20)
-    expect(order.total).toBe(1000)
+    expect(order.total).toBe(699)
     expect(order.savings).toBeGreaterThan(0)
   })
 
