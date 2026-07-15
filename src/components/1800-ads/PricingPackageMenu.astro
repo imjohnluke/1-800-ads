@@ -1,0 +1,256 @@
+---
+import {
+  ADS_DEFAULT,
+  ADS_OPTIONS,
+  DELIVERY_SCHEDULES,
+  formatUsd,
+  getOrderSummary,
+} from '../../data/1800-ads-pricing'
+
+const initial = getOrderSummary(ADS_DEFAULT)
+---
+
+<div class="ea-package-menu" data-ea-package-root>
+  <div class="ea-package-options" role="group" aria-label="Choose an ad package">
+    {
+      ADS_OPTIONS.map((count) => {
+        const order = getOrderSummary(count)
+        return (
+          <button
+            type="button"
+            class:list={['ea-package-option', { 'is-active': count === ADS_DEFAULT }]}
+            data-ea-package={count}
+            aria-pressed={count === ADS_DEFAULT}
+          >
+            <span class="ea-package-option-top">
+              <strong>{count} ads</strong>
+              {count === 10 && <span class="ea-package-badge">Most popular</span>}
+            </span>
+            <span class="ea-package-option-price">{formatUsd(order.total)}</span>
+            <span class="ea-package-option-rate">{formatUsd(order.pricePerAd)} per ad</span>
+            {order.savings > 0 && <span class="ea-package-option-save">Save {formatUsd(order.savings)}</span>}
+          </button>
+        )
+      })
+    }
+  </div>
+
+  <div class="ea-package-checkout">
+    <div class="ea-package-selection" aria-live="polite">
+      <span class="ea-package-selection-label">Your batch</span>
+      <strong><span data-ea-package-count>{initial.adCount}</span> static ads</strong>
+      <span><span data-ea-package-total>{formatUsd(initial.total)}</span> · <span data-ea-package-rate>{formatUsd(initial.pricePerAd)}</span> per ad</span>
+    </div>
+
+    <fieldset class="ea-package-delivery">
+      <legend>Delivery schedule</legend>
+      <div class="ea-package-delivery-options">
+        {
+          DELIVERY_SCHEDULES.map((option) => (
+            <button
+              type="button"
+              class:list={['ea-package-delivery-option', { 'is-active': option.id === 'one-time' }]}
+              data-ea-package-delivery={option.id}
+              aria-pressed={option.id === 'one-time'}
+            >
+              <strong>{option.label}</strong>
+              <span>{option.description}</span>
+            </button>
+          ))
+        }
+      </div>
+    </fieldset>
+
+    <div class="ea-package-action">
+      <button type="button" class="ea-package-cta" data-ea-package-checkout>
+        Order <span data-ea-package-cta-count>{initial.adCount}</span> ads — <span data-ea-package-cta-total>{formatUsd(initial.total)}</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
+      </button>
+      <p data-ea-package-note>One-time payment · Brief sent after checkout</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { formatUsd, getOrderSummary, type AdCountOption, type DeliverySchedule } from '../../data/1800-ads-pricing'
+
+  function initPackageMenu() {
+    const root = document.querySelector('[data-ea-package-root]')
+    if (!root || root.hasAttribute('data-ea-initialized')) return
+    root.setAttribute('data-ea-initialized', '')
+
+    const packageButtons = root.querySelectorAll('[data-ea-package]')
+    const deliveryButtons = root.querySelectorAll('[data-ea-package-delivery]')
+    const checkoutButton = root.querySelector('[data-ea-package-checkout]')
+    const countEls = root.querySelectorAll('[data-ea-package-count], [data-ea-package-cta-count]')
+    const totalEls = root.querySelectorAll('[data-ea-package-total], [data-ea-package-cta-total]')
+    const rateEl = root.querySelector('[data-ea-package-rate]')
+    const noteEl = root.querySelector('[data-ea-package-note]')
+
+    let currentCount: AdCountOption = 10
+    let currentDelivery: DeliverySchedule = 'one-time'
+
+    const update = () => {
+      const order = getOrderSummary(currentCount)
+      packageButtons.forEach((button) => {
+        const active = Number(button.getAttribute('data-ea-package')) === currentCount
+        button.classList.toggle('is-active', active)
+        button.setAttribute('aria-pressed', String(active))
+      })
+      deliveryButtons.forEach((button) => {
+        const active = button.getAttribute('data-ea-package-delivery') === currentDelivery
+        button.classList.toggle('is-active', active)
+        button.setAttribute('aria-pressed', String(active))
+      })
+      countEls.forEach((el) => (el.textContent = String(order.adCount)))
+      totalEls.forEach((el) => (el.textContent = formatUsd(order.total)))
+      if (rateEl) rateEl.textContent = formatUsd(order.pricePerAd)
+      if (noteEl) noteEl.textContent = currentDelivery === 'monthly'
+        ? 'Monthly delivery · Brief sent after checkout'
+        : 'One-time payment · Brief sent after checkout'
+      checkoutButton?.setAttribute('aria-label', `Order ${order.adCount} ads for ${formatUsd(order.total)}`)
+    }
+
+    packageButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        currentCount = Number(button.getAttribute('data-ea-package')) as AdCountOption
+        update()
+      })
+    })
+
+    deliveryButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        currentDelivery = button.getAttribute('data-ea-package-delivery') as DeliverySchedule
+        update()
+      })
+    })
+
+    checkoutButton?.addEventListener('click', () => {
+      const order = getOrderSummary(currentCount)
+      try {
+        const w = window as Window & { dataLayer?: Record<string, unknown>[] }
+        w.dataLayer = w.dataLayer || []
+        w.dataLayer.push({ ecommerce: null })
+        w.dataLayer.push({
+          event: 'add_to_cart',
+          pricing_layout: 'package_menu',
+          ecommerce: {
+            currency: 'USD',
+            value: order.total,
+            items: [{
+              item_id: `1800-ads-${order.adCount}`,
+              item_name: `1-800 Ads — ${order.label}`,
+              item_brand: '1-800 Ads',
+              item_category: '1800_ads',
+              price: order.total,
+              quantity: 1,
+            }],
+          },
+        })
+      } catch {
+        /* analytics must not block checkout */
+      }
+      document.dispatchEvent(new CustomEvent('open-1800-checkout', {
+        detail: { adCount: currentCount, deliverySchedule: currentDelivery },
+      }))
+    })
+
+    update()
+  }
+
+  initPackageMenu()
+  document.addEventListener('astro:page-load', initPackageMenu)
+</script>
+
+<style>
+  .ea-package-menu {
+    padding: clamp(20px, 3vw, 32px);
+    border: 1px solid rgba(42, 8, 16, 0.1);
+    border-radius: 24px;
+    background: var(--brand-cream-dark);
+    box-shadow: 0 24px 70px rgba(42, 8, 16, 0.06);
+  }
+
+  .ea-package-options {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .ea-package-option {
+    position: relative;
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+    padding: 18px 16px;
+    border: 1px solid rgba(42, 8, 16, 0.1);
+    border-radius: 16px;
+    background: var(--brand-cream);
+    color: var(--brand-ink);
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 0.18s ease, background 0.18s ease, transform 0.18s ease;
+  }
+
+  .ea-package-option:hover { transform: translateY(-2px); }
+  .ea-package-option:focus-visible,
+  .ea-package-delivery-option:focus-visible,
+  .ea-package-cta:focus-visible { outline: 3px solid rgba(200, 16, 46, 0.28); outline-offset: 2px; }
+
+  .ea-package-option.is-active {
+    border-color: var(--brand-red);
+    background: rgba(200, 16, 46, 0.07);
+    box-shadow: inset 0 0 0 1px rgba(200, 16, 46, 0.16);
+  }
+
+  .ea-package-option-top { display: flex; width: 100%; min-height: 23px; align-items: center; justify-content: space-between; gap: 6px; }
+  .ea-package-option-top strong { font-size: 0.9rem; }
+  .ea-package-badge { padding: 4px 7px; border-radius: 999px; background: var(--brand-red); color: #fff; font-size: 0.55rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap; }
+  .ea-package-option-price { font-family: var(--ea-font-display); font-size: clamp(1.7rem, 2.5vw, 2.35rem); line-height: 1; }
+  .ea-package-option-rate { color: var(--brand-muted); font-size: 0.75rem; }
+  .ea-package-option-save { color: var(--brand-red); font-size: 0.72rem; font-weight: 650; }
+
+  .ea-package-checkout {
+    display: grid;
+    grid-template-columns: 0.8fr 1.15fr 1.3fr;
+    gap: 24px;
+    align-items: end;
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(42, 8, 16, 0.1);
+  }
+
+  .ea-package-selection { display: flex; flex-direction: column; gap: 4px; color: var(--brand-muted); font-size: 0.8rem; }
+  .ea-package-selection-label, .ea-package-delivery legend { color: var(--brand-ink); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+  .ea-package-selection strong { color: var(--brand-ink); font-family: var(--ea-font-display); font-size: 1.6rem; font-weight: 400; }
+  .ea-package-delivery { min-width: 0; margin: 0; padding: 0; border: 0; }
+  .ea-package-delivery legend { margin-bottom: 8px; }
+  .ea-package-delivery-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .ea-package-delivery-option { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 10px 12px; border: 1px solid rgba(42, 8, 16, 0.1); border-radius: 12px; background: var(--brand-cream); color: var(--brand-ink); cursor: pointer; }
+  .ea-package-delivery-option strong { font-size: 0.78rem; }
+  .ea-package-delivery-option span { color: var(--brand-muted); font-size: 0.67rem; }
+  .ea-package-delivery-option.is-active { border-color: var(--brand-red); background: rgba(200, 16, 46, 0.07); }
+  .ea-package-action { min-width: 0; }
+  .ea-package-cta { display: flex; width: 100%; min-height: 54px; align-items: center; justify-content: center; gap: 7px; padding: 12px 18px; border: 0; border-radius: 999px; background: var(--brand-red); color: #fff; font-family: var(--ea-font-sans); font-size: 0.95rem; font-weight: 650; cursor: pointer; }
+  .ea-package-action p { margin: 8px 0 0; color: var(--brand-muted); font-size: 0.7rem; text-align: center; }
+
+  @media (max-width: 900px) {
+    .ea-package-options { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .ea-package-option:nth-child(5) { grid-column: 1 / -1; }
+    .ea-package-checkout { grid-template-columns: 1fr 1fr; }
+    .ea-package-action { grid-column: 1 / -1; }
+  }
+
+  @media (max-width: 560px) {
+    .ea-package-menu { padding: 16px; border-radius: 18px; }
+    .ea-package-options, .ea-package-checkout { grid-template-columns: 1fr; }
+    .ea-package-option:nth-child(5), .ea-package-action { grid-column: auto; }
+    .ea-package-option { display: grid; grid-template-columns: 1fr auto; align-items: center; padding: 14px; }
+    .ea-package-option-top { min-height: 0; }
+    .ea-package-option-price { grid-column: 2; grid-row: 1 / span 2; }
+    .ea-package-option-rate, .ea-package-option-save { grid-column: 1; }
+    .ea-package-badge { display: none; }
+  }
+</style>

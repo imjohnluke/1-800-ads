@@ -2,7 +2,7 @@
 export const prerender = false
 
 import PageLayout from '../layouts/PageLayout.astro'
-import PricingSlider from '../components/1800-ads/PricingSlider.astro'
+import PricingPackageMenu from '../components/1800-ads/PricingPackageMenu.astro'
 import WorkGallery from '../components/1800-ads/WorkGallery.astro'
 import ClosingSection from '../components/1800-ads/ClosingSection.astro'
 import TestimonialsSection from '../components/1800-ads/TestimonialsSection.astro'
@@ -11,7 +11,6 @@ import FlexibilitySection from '../components/1800-ads/FlexibilitySection.astro'
 import ScrollStatement from '../components/1800-ads/ScrollStatement.astro'
 import FaqSection from '../components/1800-ads/FaqSection.astro'
 import Footer1800Ads from '../components/1800-ads/Footer1800Ads.astro'
-import { ADS_INCLUDED } from '../data/1800-ads-pricing'
 import { webPageSchema } from '../lib/schema'
 import { SITE_URL } from '../lib/site'
 
@@ -34,10 +33,14 @@ const tickerCol2 = [
 ]
 
 const brandLogos = [
-  { src: '/images/trusted-by/miss-grass.png', alt: 'Miss Grass' },
+  { src: '/images/trusted-by/miss-grass.png', alt: 'Miss Grass', inverseArtwork: true },
   { src: '/images/trusted-by/mad-coffee.png', alt: 'MAD Coffee' },
-  { src: '/images/trusted-by/portal.png', alt: 'Portal' },
-  { src: '/images/trusted-by/inessa.png', alt: 'Inessa' },
+  { src: '/images/trusted-by/portal.png', alt: 'Portal', inverseArtwork: true },
+  { src: '/images/trusted-by/inessa.png', alt: 'Inessa', inverseArtwork: true },
+  { src: '/images/trusted-by/dimensions-fm.svg', alt: 'Dimensions.FM', darkArtwork: true },
+  { src: '/images/trusted-by/wordmark-light-2.svg', alt: 'Partner brand' },
+  { src: '/images/trusted-by/graymatter.svg', alt: 'Graymatter', darkArtwork: true },
+  { src: '/images/trusted-by/manuka-health.svg', alt: 'Manuka Health', compact: true },
 ]
 
 const schemas = [
@@ -119,14 +122,28 @@ const schemas = [
     <div class="ea-logobar" data-nav-theme="cream">
       <div class="ea-wrap">
         <div class="ea-logobar-label">Trusted by brands</div>
-        <div class="ea-logo-row">
-          {
-            brandLogos.map((logo) => (
-              <div class="ea-logo">
-                <img src={logo.src} alt={logo.alt} loading="lazy" decoding="async" />
+        <div class="ea-logo-viewport">
+          <div class="ea-logo-track">
+            {[false, true].map((duplicate) => (
+              <div class="ea-logo-group" aria-hidden={duplicate ? 'true' : undefined}>
+                {brandLogos.map((logo) => (
+                  <div class="ea-logo">
+                    <img
+                      src={logo.src}
+                      alt={duplicate ? '' : logo.alt}
+                      class:list={{
+                        'ea-logo-dark-artwork': logo.darkArtwork,
+                        'ea-logo-compact': logo.compact,
+                        'ea-logo-inverse-artwork': logo.inverseArtwork,
+                      }}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </div>
+                ))}
               </div>
-            ))
-          }
+            ))}
+          </div>
         </div>
       </div>
     </div>
@@ -140,40 +157,16 @@ const schemas = [
 
   <WorkGallery />
 
-  <section class="ea-page ea-pricing-section" id="order" data-nav-theme="cream" aria-labelledby="ea-pricing-heading">
-    <div class="ea-wrap ea-pricing-split">
-      <div class="ea-pricing-copy ea-hero-copy">
+  <section class="ea-page ea-package-pricing-section" id="order" data-nav-theme="cream" aria-labelledby="ea-package-pricing-heading">
+    <div class="ea-wrap ea-package-pricing-wrap">
+      <div class="ea-package-pricing-copy">
         <span class="ea-eyebrow">Pricing</span>
-        <h2 id="ea-pricing-heading" class="ea-h-xl ea-pricing-title">
-          Pay per batch.<br />
-          <span class="ea-grad-text">Less per ad.</span>
+        <h2 id="ea-package-pricing-heading" class="ea-h-xl ea-package-pricing-title">
+          Choose your creative <span class="ea-grad-text">testing volume.</span>
         </h2>
-        <div class="ea-hero-right">
-          <p class="ea-body-lg">
-            Choose your quantity, submit your brief and get high converting ads in days, not weeks.
-          </p>
-        </div>
-        <ul class="ea-pricing-benefits">
-          {
-            ADS_INCLUDED.map((item) => (
-              <li>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path
-                    d="M20 6 9 17l-5-5"
-                    stroke="currentColor"
-                    stroke-width="2.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"></path>
-                </svg>
-                {item}
-              </li>
-            ))
-          }
-        </ul>
+        <p class="ea-body-lg">Enough launch-ready creative to test new hooks, angles and visual directions.</p>
       </div>
-      <div class="ea-pricing-card-col">
-        <PricingSlider />
-      </div>
+      <PricingPackageMenu />
     </div>
   </section>
 
@@ -482,11 +475,6 @@ const schemas = [
     text-transform: uppercase;
   }
 
-  .ea-pricing-copy .ea-hero-meta,
-  .ea-pricing-section .ea-hero-meta {
-    color: var(--brand-muted);
-  }
-
   .ea-dot {
     width: 3px;
     height: 3px;
@@ -626,12 +614,26 @@ const schemas = [
     margin-bottom: 16px;
   }
 
-  .ea-logo-row {
+  .ea-logo-viewport {
+    width: 100%;
+    overflow: hidden;
+    mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent);
+  }
+
+  .ea-logo-track {
     display: flex;
-    gap: clamp(20px, 3.5vw, 40px);
+    width: max-content;
+    min-width: max-content;
+    animation: ea-logo-scroll 28s linear infinite !important;
+    will-change: transform;
+  }
+
+  .ea-logo-group {
+    display: flex;
+    flex: 0 0 auto;
+    gap: clamp(30px, 4vw, 58px);
     align-items: center;
-    justify-content: center;
-    flex-wrap: wrap;
+    padding-right: clamp(30px, 4vw, 58px);
   }
 
   .ea-logo {
@@ -646,8 +648,29 @@ const schemas = [
     max-width: none;
     object-fit: contain;
     opacity: 0.82;
-    filter: invert(1);
+    filter: brightness(0);
     mix-blend-mode: multiply;
+  }
+
+  .ea-logo img.ea-logo-dark-artwork {
+    height: 72%;
+  }
+
+  .ea-logo img.ea-logo-inverse-artwork {
+    filter: invert(1);
+  }
+
+  .ea-logo img.ea-logo-compact {
+    height: 64%;
+  }
+
+  @keyframes ea-logo-scroll {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
   }
 
   @media (max-width: 540px) {
@@ -659,17 +682,22 @@ const schemas = [
       margin-bottom: 10px;
     }
 
-    .ea-logo-row {
-      gap: 10px 14px;
+    .ea-logo-group {
+      gap: 28px;
+      padding-right: 28px;
     }
 
     .ea-logo {
-      height: 18px;
-      max-width: 32vw;
+      height: 20px;
+      max-width: none;
     }
 
     .ea-logo img {
-      max-width: 100%;
+      max-width: none;
+    }
+
+    .ea-logo-track {
+      animation-duration: 22s !important;
     }
   }
 
@@ -712,119 +740,36 @@ const schemas = [
     .ea-ticker-track--up,
     .ea-ticker-track--down,
     .ea-logo-track {
-      animation: none;
+      animation: none !important;
     }
   }
 
-  .ea-pricing-section {
-    padding: clamp(60px, 8vw, 96px) 0;
+  .ea-package-pricing-section {
+    padding: clamp(64px, 9vw, 112px) 0;
     background: var(--brand-cream);
+    border-top: 1px solid rgba(42, 8, 16, 0.08);
   }
 
-  @media (min-width: 901px) {
-    .ea-pricing-section {
-      padding: clamp(100px, 12vw, 148px) 0;
-    }
+  .ea-package-pricing-wrap {
+    max-width: 1160px;
   }
 
-  .ea-wrap.ea-pricing-split {
-    max-width: 1080px;
+  .ea-package-pricing-copy {
+    max-width: 760px;
+    margin: 0 auto clamp(52px, 6vw, 76px);
+    text-align: center;
   }
 
-  .ea-pricing-split {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(380px, 1fr);
-    gap: clamp(20px, 2.5vw, 32px);
-    align-items: center;
+  .ea-package-pricing-title {
+    margin: 14px auto 16px;
+    font-size: clamp(38px, 5vw, 64px);
+    line-height: 0.98;
+    text-align: center;
   }
 
-  @media (max-width: 900px) {
-    .ea-pricing-split {
-      grid-template-columns: 1fr;
-      gap: 2rem;
-      align-items: stretch;
-    }
-
-    .ea-pricing-copy {
-      display: contents;
-    }
-
-    .ea-pricing-copy .ea-eyebrow {
-      order: 1;
-      justify-self: center;
-    }
-
-    .ea-pricing-copy .ea-pricing-title {
-      order: 2;
-      justify-self: center;
-      text-align: center;
-      margin-inline: auto;
-      margin-top: 0.5rem;
-      margin-bottom: 0;
-    }
-
-    .ea-pricing-copy .ea-hero-right {
-      order: 3;
-      justify-self: center;
-      text-align: center;
-      margin-top: -1.5rem;
-      padding-top: 0;
-      max-width: 28rem;
-    }
-
-    .ea-pricing-card-col {
-      order: 4;
-    }
-  }
-
-  .ea-pricing-copy {
-    max-width: none;
-  }
-
-  .ea-pricing-title {
-    margin-top: 14px;
-    font-size: clamp(36px, 4.8vw, 56px);
-    max-width: 11ch;
-  }
-
-  .ea-pricing-copy .ea-hero-right {
-    padding-top: 12px;
-    max-width: 22rem;
-  }
-
-  .ea-pricing-benefits {
-    list-style: none;
-    margin: 28px 0 0;
-    padding: 0;
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.85rem 1.5rem;
-    max-width: 36rem;
-  }
-
-  @media (max-width: 900px) {
-    .ea-pricing-benefits {
-      display: none;
-    }
-  }
-
-  .ea-pricing-benefits li {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.55rem;
-    font-size: 0.9rem;
-    line-height: 1.45;
-    color: var(--ea-muted);
-  }
-
-  .ea-pricing-benefits svg {
-    flex-shrink: 0;
-    margin-top: 0.15rem;
-    color: var(--brand-red);
-  }
-
-  .ea-pricing-card-col {
-    min-width: 0;
+  .ea-package-pricing-copy p {
+    max-width: 620px;
+    margin: 0 auto;
   }
 
   .ea-final-cta {
