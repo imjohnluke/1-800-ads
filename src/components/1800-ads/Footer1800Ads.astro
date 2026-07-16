@@ -152,15 +152,21 @@ const socialLinks = [
     color: var(--brand-ink);
   }
 
-  @media (max-width: 960px) {
+  @media (max-width: 768px) {
     .ea-footer-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 24px;
+      row-gap: 32px;
     }
-  }
 
-  @media (max-width: 560px) {
-    .ea-footer-grid {
-      grid-template-columns: 1fr;
+    .ea-footer-brand {
+      grid-column: 1 / -1;
+      order: 1;
     }
+
+    .ea-footer-col:nth-child(2) { order: 2; }
+    .ea-footer-col:nth-child(4) { order: 3; }
+    .ea-footer-col:nth-child(3) { order: 4; }
+    .ea-footer-col:nth-child(5) { order: 5; }
   }
 </style>
