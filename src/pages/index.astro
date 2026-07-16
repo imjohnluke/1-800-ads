@@ -760,6 +760,12 @@ const schemas = [
     text-align: center;
   }
 
+  .ea-package-pricing-copy .ea-eyebrow {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+  }
+
   .ea-package-pricing-title {
     margin: 14px auto 16px;
     font-size: clamp(38px, 5vw, 64px);
@@ -770,6 +776,20 @@ const schemas = [
   .ea-package-pricing-copy p {
     max-width: 620px;
     margin: 0 auto;
+    text-align: center;
+  }
+
+  @media (max-width: 560px) {
+    .ea-package-pricing-copy {
+      margin-bottom: 56px;
+    }
+
+    .ea-package-pricing-title {
+      margin-top: 22px;
+      margin-bottom: 24px;
+      font-size: 36px;
+      line-height: 1.02;
+    }
   }
 
   .ea-final-cta {
