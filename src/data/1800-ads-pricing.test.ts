@@ -12,6 +12,8 @@ import {
   getAdCountFromIndex,
   getAdCountIndex,
   getDeliveryScheduleLabel,
+  getDeliveryEstimate,
+  formatUsd,
 } from './1800-ads-pricing'
 
 describe('1800-ads-pricing', () => {
@@ -36,28 +38,56 @@ describe('1800-ads-pricing', () => {
   it('uses the approved tier ladder and defaults to 10 ads', () => {
     expect(ADS_DEFAULT).toBe(10)
     expect(ADS_OPTIONS.map((count) => getTotalPrice(count))).toEqual([
-      249,
-      399,
-      699,
-      1499,
-      2499,
+      199,
+      349,
+      599,
+      1249,
+      1999,
     ])
   })
 
-  it('prices 20 ads at $699', () => {
-    expect(getTotalPrice(20)).toBe(699)
-    expect(getPricePerAd(20)).toBe(34.95)
+  it('prices 5 ads at $199', () => {
+    expect(getTotalPrice(5)).toBe(199)
+    expect(getPricePerAd(5)).toBe(39.8)
+  })
+
+  it('shows two digits for cents while leaving whole-dollar prices clean', () => {
+    expect(formatUsd(39.8)).toBe('$39.80')
+    expect(formatUsd(39.9)).toBe('$39.90')
+    expect(formatUsd(199)).toBe('$199')
+  })
+
+  it('prices 20 ads at $599', () => {
+    expect(getTotalPrice(20)).toBe(599)
+    expect(getPricePerAd(20)).toBe(29.95)
+  })
+
+  it('reduces the per-ad price at every larger tier', () => {
+    const rates = ADS_OPTIONS.map(getPricePerAd)
+    rates.slice(1).forEach((rate, index) => {
+      expect(rate).toBeLessThan(rates[index])
+    })
   })
 
   it('returns consistent order totals', () => {
     const order = getOrderSummary(20)
     expect(order.adCount).toBe(20)
-    expect(order.total).toBe(699)
+    expect(order.total).toBe(599)
     expect(order.savings).toBeGreaterThan(0)
   })
 
   it('offers one-time and monthly delivery schedules', () => {
     expect(DELIVERY_SCHEDULES.map((option) => option.id)).toEqual(['one-time', 'monthly'])
     expect(getDeliveryScheduleLabel('monthly')).toBe('Monthly')
+  })
+
+  it('returns the estimated delivery time for each package', () => {
+    expect(ADS_OPTIONS.map(getDeliveryEstimate)).toEqual([
+      '12 hours',
+      '24 hours',
+      '48 hours',
+      '72 hours',
+      '3–5 days',
+    ])
   })
 })

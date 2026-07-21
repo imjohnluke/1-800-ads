@@ -15,17 +15,25 @@ export const DELIVERY_SCHEDULES = [
 
 /** Fixed order total per tier (USD) */
 export const ADS_TIER_PRICES: Record<AdCountOption, number> = {
-  5: 249,
-  10: 399,
-  20: 699,
-  50: 1499,
-  100: 2499,
+  5: 199,
+  10: 349,
+  20: 599,
+  50: 1249,
+  100: 1999,
 }
 
 /** Per-ad rate at the smallest tier — used for savings comparison */
 export const ADS_BASE_RATE = ADS_TIER_PRICES[5] / 5
 
 export const ADS_QUICK_PICKS = ADS_OPTIONS
+
+export const ADS_DELIVERY_ESTIMATES: Record<AdCountOption, string> = {
+  5: '12 hours',
+  10: '24 hours',
+  20: '48 hours',
+  50: '72 hours',
+  100: '3–5 days',
+}
 
 export const ADS_INCLUDED = [
   'Conversion focused',
@@ -77,6 +85,10 @@ export function getTotalPrice(adCount: number): number {
   return ADS_TIER_PRICES[clampAdCount(adCount)]
 }
 
+export function getDeliveryEstimate(adCount: number): string {
+  return ADS_DELIVERY_ESTIMATES[clampAdCount(adCount)]
+}
+
 /** Savings vs buying every ad at the 5-ad rate */
 export function getSavings(adCount: number): number {
   const count = clampAdCount(adCount)
@@ -85,11 +97,13 @@ export function getSavings(adCount: number): number {
 }
 
 export function formatUsd(amount: number): string {
+  const hasCents = amount % 1 !== 0
+
   return amount.toLocaleString('en-US', {
     style: 'currency',
     currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: amount % 1 === 0 ? 0 : 2,
+    minimumFractionDigits: hasCents ? 2 : 0,
+    maximumFractionDigits: hasCents ? 2 : 0,
   })
 }
 

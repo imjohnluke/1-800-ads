@@ -1,6 +1,5 @@
 ---
 import '../styles/global.css'
-import CookieConsent from '../components/CookieConsent.astro'
 import { SITE_NAME } from '../lib/site'
 
 interface Props {
@@ -63,7 +62,6 @@ const fullTitle = title === SITE_NAME ? `${SITE_NAME} — Static Ad Creatives On
   </head>
   <body>
     <slot />
-    <CookieConsent />
     <script is:inline>
       (function () {
         var params = new URLSearchParams(window.location.search)
