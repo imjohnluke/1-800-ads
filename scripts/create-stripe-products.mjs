@@ -8,11 +8,11 @@ import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
 
 const TIERS = [
-  { adCount: 5, total: 249 },
-  { adCount: 10, total: 399 },
-  { adCount: 20, total: 699 },
-  { adCount: 50, total: 1499 },
-  { adCount: 100, total: 2499 },
+  { adCount: 5, total: 199 },
+  { adCount: 10, total: 349 },
+  { adCount: 20, total: 599 },
+  { adCount: 50, total: 1249 },
+  { adCount: 100, total: 1999 },
 ]
 
 const PRODUCT_KEY = '1800-ads'

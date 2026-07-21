@@ -4,7 +4,7 @@ import {
   ADS_MAX,
   ADS_DEFAULT,
   ADS_OPTIONS,
-  DELIVERY_SCHEDULES,
+  getDeliveryEstimate,
   getOrderSummary,
   getAdCountIndex,
   formatUsd,
@@ -66,41 +66,22 @@ const initialIndex = getAdCountIndex(ADS_DEFAULT)
   </div>
 
   <div class="ea-pricing-extras" data-ea-extras>
-    <fieldset class="ea-pricing-delivery">
-      <legend class="ea-pricing-delivery-label">Delivery schedule</legend>
-      <div class="ea-pricing-delivery-options" role="radiogroup" aria-label="Delivery schedule">
-        {
-          DELIVERY_SCHEDULES.map((option) => (
-            <button
-              type="button"
-              class:list={[
-                'ea-pricing-delivery-option',
-                { 'is-active': option.id === 'one-time' },
-              ]}
-              data-ea-delivery={option.id}
-              aria-pressed={option.id === 'one-time'}
-            >
-              <span class="ea-pricing-delivery-option-label">{option.label}</span>
-              <span class="ea-pricing-delivery-option-desc">{option.description}</span>
-            </button>
-          ))
-        }
-      </div>
-    </fieldset>
+    <div class="ea-pricing-delivery">
+      <span class="ea-pricing-delivery-label">Estimated delivery time</span>
+      <strong class="ea-pricing-delivery-estimate" data-ea-delivery-estimate>{getDeliveryEstimate(initial.adCount)}</strong>
+    </div>
   </div>
 
   <button
     type="button"
     class="ea-pricing-cta"
     data-ea-checkout
-    aria-label={`Order ${initial.adCount} ads for ${formatUsd(initial.total)}`}
+    aria-label={`Order ${initial.adCount} ads and start now`}
   >
     <span class="ea-pricing-cta-desktop">
-      Order <span data-ea-cta-count>{initial.adCount}</span> ads — <span data-ea-cta-total
-        >{formatUsd(initial.total)}</span
-      >
+      Order <span data-ea-cta-count>{initial.adCount}</span> Ads &amp; Start Now
     </span>
-    <span class="ea-pricing-cta-mobile">Get started now</span>
+    <span class="ea-pricing-cta-mobile">Order <span data-ea-cta-mobile-count>{initial.adCount}</span> Ads &amp; Start Now</span>
     <svg
       class="ea-pricing-cta-icon"
       width="16"
@@ -124,8 +105,8 @@ const initialIndex = getAdCountIndex(ADS_DEFAULT)
     getAdCountFromIndex,
     getAdCountIndex,
     getOrderSummary,
+    getDeliveryEstimate,
     formatUsd,
-    type DeliverySchedule,
   } from '../../data/1800-ads-pricing'
 
   function initPricingSlider() {
@@ -141,36 +122,16 @@ const initialIndex = getAdCountIndex(ADS_DEFAULT)
     const savingsEl = root.querySelector('[data-ea-savings]')
     const savingsAmountEl = root.querySelector('[data-ea-savings-amount]')
     const ctaCountEl = root.querySelector('[data-ea-cta-count]')
-    const ctaTotalEl = root.querySelector('[data-ea-cta-total]')
+    const ctaMobileCountEl = root.querySelector('[data-ea-cta-mobile-count]')
     const checkoutBtn = root.querySelector('[data-ea-checkout]')
     const extrasEl = root.querySelector('[data-ea-extras]')
     const noteEl = root.querySelector('[data-ea-note]')
-    const deliveryButtons = root.querySelectorAll('[data-ea-delivery]')
+    const deliveryEstimateEl = root.querySelector('[data-ea-delivery-estimate]')
     const popularEl = root.querySelector('[data-ea-popular]')
 
     if (!(slider instanceof HTMLInputElement)) return
 
     let currentCount = getAdCountFromIndex(Number(slider.value))
-    let currentDelivery: DeliverySchedule = 'one-time'
-
-    const updateNote = () => {
-      if (!noteEl) return
-      if (currentDelivery === 'one-time') {
-        noteEl.textContent = 'One-time payment · Brief sent after checkout'
-        return
-      }
-      noteEl.textContent = 'Monthly delivery · Brief sent after checkout'
-    }
-
-    const updateDeliveryUI = () => {
-      deliveryButtons.forEach((btn) => {
-        const schedule = btn.getAttribute('data-ea-delivery') as DeliverySchedule
-        const active = schedule === currentDelivery
-        btn.classList.toggle('is-active', active)
-        btn.setAttribute('aria-pressed', String(active))
-      })
-      updateNote()
-    }
 
     const updateUI = (index: number) => {
       currentCount = getAdCountFromIndex(index)
@@ -187,11 +148,13 @@ const initialIndex = getAdCountIndex(ADS_DEFAULT)
       if (totalEl) totalEl.textContent = formatUsd(order.total)
       if (perAdEl) perAdEl.textContent = formatUsd(order.pricePerAd)
       if (ctaCountEl) ctaCountEl.textContent = String(order.adCount)
-      if (ctaTotalEl) ctaTotalEl.textContent = formatUsd(order.total)
+      if (ctaMobileCountEl) ctaMobileCountEl.textContent = String(order.adCount)
       if (popularEl) popularEl.toggleAttribute('hidden', order.adCount !== 10)
+      if (deliveryEstimateEl) deliveryEstimateEl.textContent = getDeliveryEstimate(order.adCount)
+      if (noteEl) noteEl.textContent = 'One-time payment · Brief sent after checkout'
       checkoutBtn?.setAttribute(
         'aria-label',
-        `Order ${order.adCount} ads for ${formatUsd(order.total)}`,
+        `Order ${order.adCount} ads and start now`,
       )
 
       if (savingsEl && savingsAmountEl) {
@@ -205,7 +168,6 @@ const initialIndex = getAdCountIndex(ADS_DEFAULT)
 
       if (extrasEl) extrasEl.removeAttribute('hidden')
 
-      updateDeliveryUI()
     }
 
     slider.addEventListener('input', () => {
@@ -241,7 +203,7 @@ const initialIndex = getAdCountIndex(ADS_DEFAULT)
 
       const detail = {
         adCount: currentCount,
-        deliverySchedule: currentDelivery,
+        deliverySchedule: 'one-time',
       }
 
       const openCheckout = () => {
@@ -251,14 +213,6 @@ const initialIndex = getAdCountIndex(ADS_DEFAULT)
       openCheckout()
     }
 
-    deliveryButtons.forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const schedule = btn.getAttribute('data-ea-delivery') as DeliverySchedule
-        if (!schedule) return
-        currentDelivery = schedule
-        updateDeliveryUI()
-      })
-    })
 
     checkoutBtn?.addEventListener('click', openCheckoutFlow)
 
@@ -530,6 +484,14 @@ const initialIndex = getAdCountIndex(ADS_DEFAULT)
     font-size: 0.875rem;
     font-weight: 600;
     letter-spacing: -0.01em;
+    color: var(--brand-ink);
+  }
+
+  .ea-pricing-delivery-estimate {
+    display: block;
+    font-family: var(--ea-font-display);
+    font-size: 1.75rem;
+    font-weight: 400;
     color: var(--brand-ink);
   }
 

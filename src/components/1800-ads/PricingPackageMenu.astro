@@ -2,8 +2,8 @@
 import {
   ADS_DEFAULT,
   ADS_OPTIONS,
-  DELIVERY_SCHEDULES,
   formatUsd,
+  getDeliveryEstimate,
   getOrderSummary,
 } from '../../data/1800-ads-pricing'
 
@@ -39,31 +39,16 @@ const initial = getOrderSummary(ADS_DEFAULT)
     <div class="ea-package-selection" aria-live="polite">
       <span class="ea-package-selection-label">Your batch</span>
       <strong><span data-ea-package-count>{initial.adCount}</span> static ads</strong>
-      <span><span data-ea-package-total>{formatUsd(initial.total)}</span> · <span data-ea-package-rate>{formatUsd(initial.pricePerAd)}</span> per ad</span>
     </div>
 
-    <fieldset class="ea-package-delivery">
-      <legend>Delivery schedule</legend>
-      <div class="ea-package-delivery-options">
-        {
-          DELIVERY_SCHEDULES.map((option) => (
-            <button
-              type="button"
-              class:list={['ea-package-delivery-option', { 'is-active': option.id === 'one-time' }]}
-              data-ea-package-delivery={option.id}
-              aria-pressed={option.id === 'one-time'}
-            >
-              <strong>{option.label}</strong>
-              <span>{option.description}</span>
-            </button>
-          ))
-        }
-      </div>
-    </fieldset>
+    <div class="ea-package-delivery">
+      <span class="ea-package-delivery-label">Estimated delivery time</span>
+      <strong class="ea-package-delivery-estimate" data-ea-package-estimate>{getDeliveryEstimate(initial.adCount)}</strong>
+    </div>
 
     <div class="ea-package-action">
       <button type="button" class="ea-package-cta" data-ea-package-checkout>
-        Order <span data-ea-package-cta-count>{initial.adCount}</span> ads — <span data-ea-package-cta-total>{formatUsd(initial.total)}</span>
+        Order <span data-ea-package-cta-count>{initial.adCount}</span> Ads &amp; Start Now
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
       </button>
       <p data-ea-package-note>One-time payment · Brief sent after checkout</p>
@@ -72,7 +57,7 @@ const initial = getOrderSummary(ADS_DEFAULT)
 </div>
 
 <script>
-  import { formatUsd, getOrderSummary, type AdCountOption, type DeliverySchedule } from '../../data/1800-ads-pricing'
+  import { getDeliveryEstimate, getOrderSummary, type AdCountOption } from '../../data/1800-ads-pricing'
 
   function initPackageMenu() {
     const root = document.querySelector('[data-ea-package-root]')
@@ -80,15 +65,12 @@ const initial = getOrderSummary(ADS_DEFAULT)
     root.setAttribute('data-ea-initialized', '')
 
     const packageButtons = root.querySelectorAll('[data-ea-package]')
-    const deliveryButtons = root.querySelectorAll('[data-ea-package-delivery]')
     const checkoutButton = root.querySelector('[data-ea-package-checkout]')
     const countEls = root.querySelectorAll('[data-ea-package-count], [data-ea-package-cta-count]')
-    const totalEls = root.querySelectorAll('[data-ea-package-total], [data-ea-package-cta-total]')
-    const rateEl = root.querySelector('[data-ea-package-rate]')
     const noteEl = root.querySelector('[data-ea-package-note]')
+    const estimateEl = root.querySelector('[data-ea-package-estimate]')
 
     let currentCount: AdCountOption = 10
-    let currentDelivery: DeliverySchedule = 'one-time'
 
     const update = () => {
       const order = getOrderSummary(currentCount)
@@ -97,30 +79,15 @@ const initial = getOrderSummary(ADS_DEFAULT)
         button.classList.toggle('is-active', active)
         button.setAttribute('aria-pressed', String(active))
       })
-      deliveryButtons.forEach((button) => {
-        const active = button.getAttribute('data-ea-package-delivery') === currentDelivery
-        button.classList.toggle('is-active', active)
-        button.setAttribute('aria-pressed', String(active))
-      })
       countEls.forEach((el) => (el.textContent = String(order.adCount)))
-      totalEls.forEach((el) => (el.textContent = formatUsd(order.total)))
-      if (rateEl) rateEl.textContent = formatUsd(order.pricePerAd)
-      if (noteEl) noteEl.textContent = currentDelivery === 'monthly'
-        ? 'Monthly delivery · Brief sent after checkout'
-        : 'One-time payment · Brief sent after checkout'
-      checkoutButton?.setAttribute('aria-label', `Order ${order.adCount} ads for ${formatUsd(order.total)}`)
+      if (estimateEl) estimateEl.textContent = getDeliveryEstimate(order.adCount)
+      if (noteEl) noteEl.textContent = 'One-time payment · Brief sent after checkout'
+      checkoutButton?.setAttribute('aria-label', `Order ${order.adCount} ads and start now`)
     }
 
     packageButtons.forEach((button) => {
       button.addEventListener('click', () => {
         currentCount = Number(button.getAttribute('data-ea-package')) as AdCountOption
-        update()
-      })
-    })
-
-    deliveryButtons.forEach((button) => {
-      button.addEventListener('click', () => {
-        currentDelivery = button.getAttribute('data-ea-package-delivery') as DeliverySchedule
         update()
       })
     })
@@ -151,7 +118,7 @@ const initial = getOrderSummary(ADS_DEFAULT)
         /* analytics must not block checkout */
       }
       document.dispatchEvent(new CustomEvent('open-1800-checkout', {
-        detail: { adCount: currentCount, deliverySchedule: currentDelivery },
+        detail: { adCount: currentCount, deliverySchedule: 'one-time' },
       }))
     })
 
@@ -223,10 +190,10 @@ const initial = getOrderSummary(ADS_DEFAULT)
   }
 
   .ea-package-selection { display: flex; flex-direction: column; gap: 4px; color: var(--brand-muted); font-size: 0.8rem; }
-  .ea-package-selection-label, .ea-package-delivery legend { color: var(--brand-ink); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+  .ea-package-selection-label, .ea-package-delivery-label { color: var(--brand-ink); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
   .ea-package-selection strong { color: var(--brand-ink); font-family: var(--ea-font-display); font-size: 1.6rem; font-weight: 400; }
-  .ea-package-delivery { min-width: 0; margin: 0; padding: 0; border: 0; }
-  .ea-package-delivery legend { margin-bottom: 8px; }
+  .ea-package-delivery { display: flex; min-width: 0; flex-direction: column; gap: 6px; }
+  .ea-package-delivery-estimate { color: var(--brand-ink); font-family: var(--ea-font-display); font-size: 1.6rem; font-weight: 400; }
   .ea-package-delivery-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
   .ea-package-delivery-option { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 10px 12px; border: 1px solid rgba(42, 8, 16, 0.1); border-radius: 12px; background: var(--brand-cream); color: var(--brand-ink); cursor: pointer; }
   .ea-package-delivery-option strong { font-size: 0.78rem; }
