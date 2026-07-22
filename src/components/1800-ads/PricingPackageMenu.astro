@@ -22,6 +22,7 @@ const initial = getOrderSummary(ADS_DEFAULT)
             data-ea-package={count}
             aria-pressed={count === ADS_DEFAULT}
           >
+            <span class="ea-package-option-mobile-label">{count}</span>
             <span class="ea-package-option-top">
               <strong>{count} ads</strong>
               {count === 10 && <span class="ea-package-badge">Most popular</span>}
@@ -33,6 +34,25 @@ const initial = getOrderSummary(ADS_DEFAULT)
         )
       })
     }
+  </div>
+
+  <div class="ea-package-mobile-summary" aria-live="polite">
+    <div class="ea-package-mobile-summary-top">
+      <span class="ea-package-mobile-eyebrow">Your package</span>
+      <span class="ea-package-mobile-popular" data-ea-mobile-popular>Most popular</span>
+    </div>
+    <div class="ea-package-mobile-heading">
+      <strong><span data-ea-package-count>{initial.adCount}</span> static ads</strong>
+      <span class="ea-package-mobile-total" data-ea-mobile-total>{formatUsd(initial.total)}</span>
+    </div>
+    <div class="ea-package-mobile-meta">
+      <span><strong data-ea-mobile-rate>{formatUsd(initial.pricePerAd)}</strong> per ad</span>
+      <span class="ea-package-mobile-save" data-ea-mobile-save>Save {formatUsd(initial.savings)}</span>
+    </div>
+    <div class="ea-package-mobile-delivery">
+      <span>Estimated delivery</span>
+      <strong data-ea-package-estimate>{getDeliveryEstimate(initial.adCount)}</strong>
+    </div>
   </div>
 
   <div class="ea-package-checkout">
@@ -57,7 +77,7 @@ const initial = getOrderSummary(ADS_DEFAULT)
 </div>
 
 <script>
-  import { getDeliveryEstimate, getOrderSummary, type AdCountOption } from '../../data/1800-ads-pricing'
+  import { formatUsd, getDeliveryEstimate, getOrderSummary, type AdCountOption } from '../../data/1800-ads-pricing'
 
   function initPackageMenu() {
     const root = document.querySelector('[data-ea-package-root]')
@@ -68,9 +88,13 @@ const initial = getOrderSummary(ADS_DEFAULT)
     const checkoutButton = root.querySelector('[data-ea-package-checkout]')
     const countEls = root.querySelectorAll('[data-ea-package-count], [data-ea-package-cta-count]')
     const noteEl = root.querySelector('[data-ea-package-note]')
-    const estimateEl = root.querySelector('[data-ea-package-estimate]')
+    const estimateEls = root.querySelectorAll('[data-ea-package-estimate]')
+    const mobileTotalEl = root.querySelector('[data-ea-mobile-total]')
+    const mobileRateEl = root.querySelector('[data-ea-mobile-rate]')
+    const mobileSaveEl = root.querySelector('[data-ea-mobile-save]')
+    const mobilePopularEl = root.querySelector('[data-ea-mobile-popular]')
 
-    let currentCount: AdCountOption = 10
+    let currentCount: AdCountOption = 5
 
     const update = () => {
       const order = getOrderSummary(currentCount)
@@ -80,7 +104,14 @@ const initial = getOrderSummary(ADS_DEFAULT)
         button.setAttribute('aria-pressed', String(active))
       })
       countEls.forEach((el) => (el.textContent = String(order.adCount)))
-      if (estimateEl) estimateEl.textContent = getDeliveryEstimate(order.adCount)
+      estimateEls.forEach((el) => (el.textContent = getDeliveryEstimate(order.adCount)))
+      if (mobileTotalEl) mobileTotalEl.textContent = formatUsd(order.total)
+      if (mobileRateEl) mobileRateEl.textContent = formatUsd(order.pricePerAd)
+      if (mobileSaveEl) {
+        mobileSaveEl.textContent = `Save ${formatUsd(order.savings)}`
+        mobileSaveEl.toggleAttribute('hidden', order.savings <= 0)
+      }
+      mobilePopularEl?.toggleAttribute('hidden', order.adCount !== 10)
       if (noteEl) noteEl.textContent = 'One-time payment · Brief sent after checkout'
       checkoutButton?.setAttribute('aria-label', `Order ${order.adCount} ads and start now`)
     }
@@ -161,6 +192,9 @@ const initial = getOrderSummary(ADS_DEFAULT)
     transition: border-color 0.18s ease, background 0.18s ease, transform 0.18s ease;
   }
 
+  .ea-package-option-mobile-label,
+  .ea-package-mobile-summary { display: none; }
+
   .ea-package-option:hover { transform: translateY(-2px); }
   .ea-package-option:focus-visible,
   .ea-package-delivery-option:focus-visible,
@@ -212,12 +246,55 @@ const initial = getOrderSummary(ADS_DEFAULT)
 
   @media (max-width: 560px) {
     .ea-package-menu { padding: 16px; border-radius: 18px; }
-    .ea-package-options, .ea-package-checkout { grid-template-columns: 1fr; }
-    .ea-package-option:nth-child(5), .ea-package-action { grid-column: auto; }
-    .ea-package-option { display: grid; grid-template-columns: 1fr auto; align-items: center; padding: 14px; }
-    .ea-package-option-top { min-height: 0; }
-    .ea-package-option-price { grid-column: 2; grid-row: 1 / span 2; }
-    .ea-package-option-rate, .ea-package-option-save { grid-column: 1; }
-    .ea-package-badge { display: none; }
+    .ea-package-options { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+    .ea-package-option:nth-child(5) { grid-column: auto; }
+    .ea-package-option {
+      display: flex;
+      min-height: 44px;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 3px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.55);
+      text-align: center;
+    }
+    .ea-package-option:hover { transform: none; }
+    .ea-package-option-mobile-label { display: inline; font-size: 0.82rem; font-weight: 750; }
+    .ea-package-option-top,
+    .ea-package-option-price,
+    .ea-package-option-rate,
+    .ea-package-option-save { display: none; }
+    .ea-package-option.is-active { background: var(--brand-red); color: #fff; box-shadow: 0 7px 18px rgba(200, 16, 46, 0.2); }
+
+    .ea-package-mobile-summary {
+      display: block;
+      margin-top: 14px;
+      padding: 20px;
+      border: 1px solid rgba(42, 8, 16, 0.1);
+      border-radius: 18px;
+      background: var(--brand-cream);
+      box-shadow: 0 14px 36px rgba(42, 8, 16, 0.08);
+    }
+    .ea-package-mobile-summary-top,
+    .ea-package-mobile-heading,
+    .ea-package-mobile-meta,
+    .ea-package-mobile-delivery { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .ea-package-mobile-summary-top { margin-bottom: 12px; }
+    .ea-package-mobile-eyebrow { color: var(--brand-muted); font-size: 0.68rem; font-weight: 750; letter-spacing: 0.08em; text-transform: uppercase; }
+    .ea-package-mobile-popular { padding: 5px 8px; border-radius: 999px; background: rgba(200, 16, 46, 0.1); color: var(--brand-red); font-size: 0.62rem; font-weight: 750; letter-spacing: 0.04em; text-transform: uppercase; }
+    .ea-package-mobile-heading { align-items: baseline; }
+    .ea-package-mobile-heading > strong { font-family: var(--ea-font-display); font-size: 1.65rem; font-weight: 400; }
+    .ea-package-mobile-total { font-family: var(--ea-font-display); font-size: 2.35rem; line-height: 1; }
+    .ea-package-mobile-meta { justify-content: flex-end; margin-top: 7px; color: var(--brand-muted); font-size: 0.76rem; }
+    .ea-package-mobile-meta strong { color: var(--brand-ink); }
+    .ea-package-mobile-save { color: var(--brand-red); font-weight: 750; }
+    .ea-package-mobile-delivery { margin-top: 18px; padding-top: 14px; border-top: 1px solid rgba(42, 8, 16, 0.1); color: var(--brand-muted); font-size: 0.76rem; }
+    .ea-package-mobile-delivery strong { color: var(--brand-ink); font-size: 0.92rem; }
+
+    .ea-package-checkout { display: block; margin-top: 12px; padding-top: 0; border-top: 0; }
+    .ea-package-selection,
+    .ea-package-delivery { display: none; }
+    .ea-package-cta { min-height: 56px; box-shadow: 0 10px 24px rgba(200, 16, 46, 0.24); }
+    .ea-package-action p { margin-top: 10px; }
   }
 </style>
