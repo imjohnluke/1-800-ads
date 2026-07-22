@@ -35,8 +35,8 @@ describe('1800-ads-pricing', () => {
     expect(getPricePerAd(ADS_MIN)).toBeGreaterThan(getPricePerAd(ADS_MAX))
   })
 
-  it('uses the approved tier ladder and defaults to 10 ads', () => {
-    expect(ADS_DEFAULT).toBe(10)
+  it('uses the approved tier ladder and defaults to 5 ads', () => {
+    expect(ADS_DEFAULT).toBe(5)
     expect(ADS_OPTIONS.map((count) => getTotalPrice(count))).toEqual([
       199,
       349,
